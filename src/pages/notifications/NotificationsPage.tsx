@@ -170,29 +170,38 @@ export default function NotificationsPage() {
             </p>
 
             <div style={{ marginBottom: 18 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 8, textTransform: 'uppercase' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 8, textTransform: 'uppercase' }}>
                 Target Audience
-              </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {AUDIENCES.map(a => (
-                  <button
-                    key={a}
-                    onClick={() => setAudience(a)}
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      padding: '7px 14px',
-                      borderRadius: 8,
-                      border: 'none',
-                      cursor: 'pointer',
-                      background: audience === a ? '#1B2B68' : '#F0F3FA',
-                      color: audience === a ? '#fff' : '#64748B',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    {a}
-                  </button>
-                ))}
+              </label>
+              <div style={{ position: 'relative', width: '100%', maxWidth: 360 }}>
+                <select
+                  value={audience}
+                  onChange={e => setAudience(e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 40,
+                    paddingLeft: 14,
+                    paddingRight: 34,
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    borderRadius: 8,
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: '#1A1D24',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    fontFamily: 'Manrope, sans-serif',
+                  }}
+                >
+                  {AUDIENCES.map(a => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

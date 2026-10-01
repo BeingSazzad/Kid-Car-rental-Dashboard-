@@ -13,44 +13,19 @@ interface NavItem {
   badge?: number;
 }
 
-interface NavSection {
-  title?: string;
-  items: NavItem[];
-}
-
-/* ─── 10-Year Product Design Information Architecture ───
- * Grouped by admin mental models:
- * 1. OPERATIONS (Daily Pulse & Safety: Overview, Trips, Users, KYC, Support)
- * 2. FINANCE (Revenue & Billing: Transactions, Subscription Packages)
- * 3. PLATFORM & GROWTH (Comms, Content & System Settings)
- */
-const NAV_SECTIONS: NavSection[] = [
-  {
-    title: 'Operations',
-    items: [
-      { label: 'Overview', icon: LayoutDashboard, to: ROUTES.OVERVIEW },
-      { label: 'Trips & Transit', icon: MapPin, to: ROUTES.TRIPS },
-      { label: 'Users', icon: Users, to: ROUTES.USERS },
-      { label: 'KYC Queue', icon: ShieldCheck, to: ROUTES.KYC, badge: 4 },
-      { label: 'Support Tickets', icon: LifeBuoy, to: ROUTES.SUPPORT, badge: 2 },
-    ],
-  },
-  {
-    title: 'Finance & Plans',
-    items: [
-      { label: 'Transactions', icon: CreditCard, to: ROUTES.PAYMENTS },
-      { label: 'Packages', icon: Package, to: ROUTES.PACKAGES },
-    ],
-  },
-  {
-    title: 'Growth & System',
-    items: [
-      { label: 'Push Broadcasts', icon: Megaphone, to: ROUTES.NOTIFICATIONS },
-      { label: 'Referrals', icon: Gift, to: ROUTES.REFERRALS },
-      { label: 'Content (CMS)', icon: FileText, to: ROUTES.CMS },
-      { label: 'Settings', icon: Settings, to: ROUTES.SETTINGS },
-    ],
-  },
+/* ─── Streamlined Navigation (Optimized Operational Priority Order) ─── */
+const NAV_ITEMS: NavItem[] = [
+  { label: 'Overview', icon: LayoutDashboard, to: ROUTES.OVERVIEW },
+  { label: 'Trips & Transit', icon: MapPin, to: ROUTES.TRIPS },
+  { label: 'Users', icon: Users, to: ROUTES.USERS },
+  { label: 'KYC Queue', icon: ShieldCheck, to: ROUTES.KYC, badge: 4 },
+  { label: 'Support Tickets', icon: LifeBuoy, to: ROUTES.SUPPORT, badge: 2 },
+  { label: 'Transactions', icon: CreditCard, to: ROUTES.PAYMENTS },
+  { label: 'Packages', icon: Package, to: ROUTES.PACKAGES },
+  { label: 'Push Broadcasts', icon: Megaphone, to: ROUTES.NOTIFICATIONS },
+  { label: 'Referrals', icon: Gift, to: ROUTES.REFERRALS },
+  { label: 'Content (CMS)', icon: FileText, to: ROUTES.CMS },
+  { label: 'Settings', icon: Settings, to: ROUTES.SETTINGS },
 ];
 
 export default function Sidebar() {
@@ -112,72 +87,53 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* ── Segmented Navigation ── */}
-      <nav style={{ flex: 1, overflowY: 'auto', padding: '12px 10px' }}>
-        {NAV_SECTIONS.map((section, sIdx) => (
-          <div key={section.title || sIdx} style={{ marginBottom: 14 }}>
-            {section.title && (
-              <p style={{
-                fontSize: 11,
-                fontWeight: 800,
-                color: '#94A3B8',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                padding: '0 12px',
-                marginBottom: 6,
-                marginTop: sIdx === 0 ? 2 : 12,
-              }}>
-                {section.title}
-              </p>
-            )}
-
-            {section.items.map(({ label, icon: Icon, to, badge }) => {
-              const isActive = to === '/' ? pathname === '/' : pathname.startsWith(to);
-              return (
-                <NavLink
-                  key={to}
-                  to={to}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '8px 12px',
-                    borderRadius: 9,
-                    marginBottom: 2,
-                    textDecoration: 'none',
-                    background: isActive ? '#1B2B68' : 'transparent',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={e => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F0F3FA';
-                  }}
-                  onMouseLeave={e => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  }}
-                >
-                  <Icon size={16} strokeWidth={2} style={{ color: isActive ? '#ffffff' : '#64748B', flexShrink: 0 }} />
-                  <span style={{
-                    fontSize: 13,
-                    fontWeight: isActive ? 700 : 600,
-                    color: isActive ? '#ffffff' : '#475569',
-                    flex: 1,
-                  }}>{label}</span>
-                  {badge && (
-                    <span style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: '#fff',
-                      background: '#F2600C',
-                      borderRadius: 99,
-                      padding: '1px 6px',
-                      lineHeight: '16px',
-                    }}>{badge}</span>
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
-        ))}
+      {/* ── Clean Uncluttered Navigation List ── */}
+      <nav style={{ flex: 1, overflowY: 'auto', padding: '14px 10px' }}>
+        {NAV_ITEMS.map(({ label, icon: Icon, to, badge }) => {
+          const isActive = to === '/' ? pathname === '/' : pathname.startsWith(to);
+          return (
+            <NavLink
+              key={to}
+              to={to}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '9px 12px',
+                borderRadius: 10,
+                marginBottom: 3,
+                textDecoration: 'none',
+                background: isActive ? '#1B2B68' : 'transparent',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F0F3FA';
+              }}
+              onMouseLeave={e => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
+              }}
+            >
+              <Icon size={16} strokeWidth={2} style={{ color: isActive ? '#ffffff' : '#64748B', flexShrink: 0 }} />
+              <span style={{
+                fontSize: 13,
+                fontWeight: isActive ? 700 : 600,
+                color: isActive ? '#ffffff' : '#475569',
+                flex: 1,
+              }}>{label}</span>
+              {badge && (
+                <span style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: '#fff',
+                  background: '#F2600C',
+                  borderRadius: 99,
+                  padding: '1px 7px',
+                  lineHeight: '16px',
+                }}>{badge}</span>
+              )}
+            </NavLink>
+          );
+        })}
       </nav>
 
       {/* ── Admin Footer Profile ── */}

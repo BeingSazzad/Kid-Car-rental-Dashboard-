@@ -250,10 +250,8 @@ export default function SettingsPage() {
                   Super Admin
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '3px 0 6px' }}>admin@home2school.ca</p>
-              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: '#EEF2FF', color: '#1B2B68', border: '1px solid #C7D2FE' }}>
-                Primary Root Authority
-              </span>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>admin@home2school.ca</p>
+
             </div>
           </div>
 
