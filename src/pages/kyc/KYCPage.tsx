@@ -99,22 +99,19 @@ export default function KYCPage() {
   const [candidates, setCandidates] = useState<KYCCandidate[]>(CANDIDATES);
   const [selectedId, setSelectedId] = useState<string>('KYC-001');
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'All' | 'Driver' | 'Walker'>('All');
     const [inspectDoc, setInspectDoc] = useState<KYCDoc | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   // Filter candidates list
   const filteredCandidates = useMemo(() => {
-    return candidates.filter(c => {
-      const matchRole = roleFilter === 'All' ? true : c.role === roleFilter;
-      const q = search.trim().toLowerCase();
-      const matchSearch = !q ||
-        c.name.toLowerCase().includes(q) ||
-        c.id.toLowerCase().includes(q) ||
-        c.role.toLowerCase().includes(q);
-      return matchRole && matchSearch;
-    });
-  }, [candidates, search, roleFilter]);
+    const q = search.trim().toLowerCase();
+    if (!q) return candidates;
+    return candidates.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.id.toLowerCase().includes(q) ||
+      c.role.toLowerCase().includes(q)
+    );
+  }, [candidates, search]);
 
   const activeCandidate = candidates.find(c => c.id === selectedId) || candidates[0];
 
@@ -237,34 +234,6 @@ Audit Status: Verified by SafeRide Admin Engine
         
         {/* LEFT: Candidate List Card */}
         <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {/* Role Filter Tabs (Drivers vs Walkers) */}
-          <div style={{ display: 'flex', background: '#F1F5F9', padding: 3, borderRadius: 8, gap: 2 }}>
-            {(['All', 'Driver', 'Walker'] as const).map(r => {
-              const active = roleFilter === r;
-              const count = r === 'All' ? candidates.length : candidates.filter(c => c.role === r).length;
-              return (
-                <button
-                  key={r}
-                  onClick={() => setRoleFilter(r)}
-                  style={{
-                    flex: 1,
-                    border: 'none',
-                    padding: '6px 8px',
-                    borderRadius: 6,
-                    fontSize: 11,
-                    fontWeight: active ? 700 : 600,
-                    cursor: 'pointer',
-                    background: active ? '#1B2B68' : 'transparent',
-                    color: active ? '#FFFFFF' : '#64748B',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {r === 'All' ? `All (${count})` : r === 'Driver' ? `🚗 Drivers (${count})` : `🚶 Walkers (${count})`}
-                </button>
-              );
-            })}
-          </div>
-
           {/* Search Box */}
           <div style={{ position: 'relative' }}>
             <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
