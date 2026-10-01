@@ -1,25 +1,56 @@
-﻿import {
+import { useState } from 'react';
+import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   BarChart as HBarChart, Bar as HBar
 } from 'recharts';
-import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
+import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, ChevronRight, Calendar } from 'lucide-react';
 
-/* ─── Mock Data ─── */
-const revenueData = [
-  { month: 'Jan', vehicle: 4200, walkshare: 1100 },
-  { month: 'Feb', vehicle: 5100, walkshare: 1400 },
-  { month: 'Mar', vehicle: 4800, walkshare: 1250 },
-  { month: 'Apr', vehicle: 6200, walkshare: 1700 },
-  { month: 'May', vehicle: 5900, walkshare: 1600 },
-  { month: 'Jun', vehicle: 7100, walkshare: 1900 },
-  { month: 'Jul', vehicle: 8400, walkshare: 2200 },
-  { month: 'Aug', vehicle: 7800, walkshare: 2100 },
-  { month: 'Sep', vehicle: 9200, walkshare: 2600 },
-  { month: 'Oct', vehicle: 8700, walkshare: 2400 },
-  { month: 'Nov', vehicle: 10200, walkshare: 2900 },
-  { month: 'Dec', vehicle: 11400, walkshare: 3200 },
-];
+/* ─── Revenue Data by Year with 3 Streams: Parents, Drivers & WalkShare ─── */
+const REVENUE_BY_YEAR: Record<string, Array<{ month: string; parent: number; driver: number; walkshare: number }>> = {
+  '2026': [
+    { month: 'Jan', parent: 2200, driver: 4200, walkshare: 1100 },
+    { month: 'Feb', parent: 2700, driver: 5100, walkshare: 1400 },
+    { month: 'Mar', parent: 2600, driver: 4800, walkshare: 1250 },
+    { month: 'Apr', parent: 3400, driver: 6200, walkshare: 1700 },
+    { month: 'May', parent: 3200, driver: 5900, walkshare: 1600 },
+    { month: 'Jun', parent: 3900, driver: 7100, walkshare: 1900 },
+    { month: 'Jul', parent: 4600, driver: 8400, walkshare: 2200 },
+    { month: 'Aug', parent: 4300, driver: 7800, walkshare: 2100 },
+    { month: 'Sep', parent: 5100, driver: 9200, walkshare: 2600 },
+    { month: 'Oct', parent: 4800, driver: 8700, walkshare: 2400 },
+    { month: 'Nov', parent: 5700, driver: 10200, walkshare: 2900 },
+    { month: 'Dec', parent: 6400, driver: 11400, walkshare: 3200 },
+  ],
+  '2025': [
+    { month: 'Jan', parent: 1500, driver: 2800, walkshare: 750 },
+    { month: 'Feb', parent: 1700, driver: 3200, walkshare: 850 },
+    { month: 'Mar', parent: 1800, driver: 3400, walkshare: 900 },
+    { month: 'Apr', parent: 2100, driver: 3900, walkshare: 1100 },
+    { month: 'May', parent: 2300, driver: 4100, walkshare: 1150 },
+    { month: 'Jun', parent: 2600, driver: 4600, walkshare: 1300 },
+    { month: 'Jul', parent: 2900, driver: 5200, walkshare: 1450 },
+    { month: 'Aug', parent: 2800, driver: 5000, walkshare: 1400 },
+    { month: 'Sep', parent: 3400, driver: 6100, walkshare: 1700 },
+    { month: 'Oct', parent: 3300, driver: 5900, walkshare: 1650 },
+    { month: 'Nov', parent: 3800, driver: 6800, walkshare: 1900 },
+    { month: 'Dec', parent: 4100, driver: 7400, walkshare: 2100 },
+  ],
+  '2024': [
+    { month: 'Jan', parent: 800, driver: 1500, walkshare: 400 },
+    { month: 'Feb', parent: 950, driver: 1700, walkshare: 450 },
+    { month: 'Mar', parent: 1050, driver: 1900, walkshare: 500 },
+    { month: 'Apr', parent: 1200, driver: 2200, walkshare: 600 },
+    { month: 'May', parent: 1350, driver: 2400, walkshare: 650 },
+    { month: 'Jun', parent: 1500, driver: 2700, walkshare: 750 },
+    { month: 'Jul', parent: 1700, driver: 3100, walkshare: 850 },
+    { month: 'Aug', parent: 1600, driver: 2900, walkshare: 800 },
+    { month: 'Sep', parent: 2000, driver: 3600, walkshare: 1000 },
+    { month: 'Oct', parent: 1900, driver: 3400, walkshare: 950 },
+    { month: 'Nov', parent: 2200, driver: 3900, walkshare: 1100 },
+    { month: 'Dec', parent: 2400, driver: 4300, walkshare: 1200 },
+  ],
+};
 
 const userGrowthData = [
   { month: 'Jan', parents: 210, providers: 38 },
@@ -59,11 +90,11 @@ const recentUsers = [
 ];
 
 const recentTx = [
-  { user: 'Sarah Tremblay', package: 'Monthly Plan', amount: '$9.99', status: 'Active', date: 'Sep 29, 2026' },
-  { user: 'Amanda Roy', package: 'Annual Plan', amount: '$79.00', status: 'Active', date: 'Sep 28, 2026' },
-  { user: 'Marcus Vance', package: 'Monthly Plan', amount: '$9.99', status: 'Expired', date: 'Sep 28, 2026' },
-  { user: 'Claire Dubois', package: 'Monthly Plan', amount: '$9.99', status: 'Active', date: 'Sep 27, 2026' },
-  { user: 'Jessica Taylor', package: 'Monthly Plan', amount: '$9.99', status: 'Active', date: 'Sep 26, 2026' },
+  { user: 'Sarah Tremblay', package: 'Monthly Commute Pass', amount: '$19.99', status: 'Active', date: 'Sep 29, 2026' },
+  { user: 'Amanda Roy', package: 'School Term Pass', amount: '$89.00', status: 'Active', date: 'Sep 28, 2026' },
+  { user: 'Marcus Vance', package: 'Monthly Commute Pass', amount: '$19.99', status: 'Expired', date: 'Sep 28, 2026' },
+  { user: 'Claire Dubois', package: 'Monthly Commute Pass', amount: '$19.99', status: 'Active', date: 'Sep 27, 2026' },
+  { user: 'Jessica Taylor', package: 'Monthly Commute Pass', amount: '$19.99', status: 'Active', date: 'Sep 26, 2026' },
 ];
 
 /* ─── Sub-components ─── */
@@ -105,7 +136,17 @@ const KPICard = ({ label, value, sub, trend, icon: Icon, accentColor }: {
   );
 };
 
-const SectionCard = ({ title, children, action }: { title: string; children: React.ReactNode; action?: string }) => (
+const SectionCard = ({
+  title,
+  children,
+  action,
+  extra,
+}: {
+  title: string;
+  children: React.ReactNode;
+  action?: string;
+  extra?: React.ReactNode;
+}) => (
   <div style={{
     background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14,
     overflow: 'hidden',
@@ -114,8 +155,9 @@ const SectionCard = ({ title, children, action }: { title: string; children: Rea
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '18px 22px', borderBottom: '1px solid #F1F5F9',
     }}>
-      <p style={{ fontSize: 16, fontWeight: 700, color: '#1A1D24' }}>{title}</p>
-      {action && (
+      <p style={{ fontSize: 16, fontWeight: 700, color: '#1A1D24', margin: 0 }}>{title}</p>
+      {extra && <div>{extra}</div>}
+      {action && !extra && (
         <button style={{ fontSize: 12, fontWeight: 600, color: '#1B2B68', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}>
           {action} <ChevronRight size={12} />
         </button>
@@ -160,7 +202,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       borderRadius: 12,
       padding: '12px 16px',
       boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
-      minWidth: 160,
+      minWidth: 180,
       border: '1px solid rgba(255,255,255,0.08)',
     }}>
       <p style={{
@@ -170,19 +212,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       {payload.map((p: any) => (
         <div key={p.name} style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: 20, marginBottom: 6,
+          gap: 16, marginBottom: 6,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <div style={{
               width: 8, height: 8, borderRadius: '50%',
               background: p.fill || p.stroke, flexShrink: 0,
             }} />
-            <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.65)' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.75)' }}>
               {p.name}
             </span>
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#ffffff' }}>
-            ${p.value.toLocaleString()}
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>
+            ${typeof p.value === 'number' ? p.value.toLocaleString() : p.value}
           </span>
         </div>
       ))}
@@ -192,6 +234,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 /* ─── Main Page ─── */
 export default function OverviewPage() {
+  const [revenueYear, setRevenueYear] = useState('2026');
   const totalUsers = userComposition.reduce((a, b) => a + b.value, 0);
 
   const kpis = [
@@ -216,30 +259,60 @@ export default function OverviewPage() {
         ))}
       </div>
 
-      {/* Charts Row 1: Revenue + User Growth */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
-        <SectionCard title="Revenue Breakdown">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={revenueData}>
+      {/* Charts Row 1: Revenue Breakdown (with Year Filter & 3 Roles) + User Growth */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: 16 }}>
+        <SectionCard
+          title="Revenue Breakdown"
+          extra={
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Calendar size={14} style={{ color: '#64748B' }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Year:</span>
+              <select
+                value={revenueYear}
+                onChange={e => setRevenueYear(e.target.value)}
+                style={{
+                  height: 30,
+                  padding: '0 10px',
+                  borderRadius: 6,
+                  border: '1px solid #CBD5E1',
+                  background: '#FFFFFF',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  fontFamily: 'Manrope, sans-serif',
+                  color: '#1B2B68',
+                  outline: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                <option value="2026">2026 (Current)</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+              </select>
+            </div>
+          }
+        >
+          <ResponsiveContainer width="100%" height={230}>
+            <BarChart data={REVENUE_BY_YEAR[revenueYear] || REVENUE_BY_YEAR['2026']} barGap={3}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 8 }} />
-              <Bar dataKey="vehicle" name="Vehicle Ride" fill="#1B2B68" radius={[5, 5, 0, 0]} />
-              <Bar dataKey="walkshare" name="WalkShare" fill="#F2600C" radius={[5, 5, 0, 0]} />
+              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 10 }} />
+              <Bar dataKey="parent" name="Parents" fill="#1B2B68" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="driver" name="Drivers" fill="#F2600C" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="walkshare" name="WalkShare" fill="#10B981" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </SectionCard>
 
         <SectionCard title="User Growth">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={230}>
             <LineChart data={userGrowthData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 8 }} />
+              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 10 }} />
               <Line type="monotone" dataKey="parents" name="Parents" stroke="#1B2B68" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#1B2B68' }} />
               <Line type="monotone" dataKey="providers" name="Providers" stroke="#F2600C" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#F2600C' }} />
             </LineChart>
@@ -289,8 +362,6 @@ export default function OverviewPage() {
             </div>
           </div>
         </SectionCard>
-
-
       </div>
 
       {/* Tables Row */}
