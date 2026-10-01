@@ -1,0 +1,17 @@
+﻿export const ROUTES = {
+  OVERVIEW: '/',
+  USERS: '/users',
+  USER_DETAIL: '/users/:id',
+  TRIPS: '/trips',
+  TRIP_DETAIL: '/trips/:id',
+  BOOKINGS: '/bookings',
+  BOOKING_DETAIL: '/bookings/:id',
+  PAYMENTS: '/payments',
+  KYC: '/kyc',
+  REFERRALS: '/referrals',
+  NOTIFICATIONS: '/notifications',
+  CMS: '/cms',
+  PACKAGES: '/packages',
+  SETTINGS: '/settings',
+  LOGIN: '/login',
+} as const;
