@@ -99,32 +99,23 @@ export default function KYCPage() {
   const [candidates, setCandidates] = useState<KYCCandidate[]>(CANDIDATES);
   const [selectedId, setSelectedId] = useState<string>('KYC-001');
   const [search, setSearch] = useState('');
-  const [statusTab, setStatusTab] = useState<'All' | 'Ready' | 'Action needed'>('All');
-  const [inspectDoc, setInspectDoc] = useState<KYCDoc | null>(null);
+    const [inspectDoc, setInspectDoc] = useState<KYCDoc | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   // Filter candidates list
   const filteredCandidates = useMemo(() => {
-    return candidates.filter(c => {
-      let matchStatus = true;
-      if (statusTab === 'Ready') matchStatus = c.status === 'Ready for review';
-      else if (statusTab === 'Action needed') matchStatus = c.status === 'Missing document' || c.status === 'Expired document';
-
-      const q = search.trim().toLowerCase();
-      let matchSearch = true;
-      if (q) {
-        matchSearch = c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q) || c.role.toLowerCase().includes(q);
-      }
-
-      return matchStatus && matchSearch;
-    });
-  }, [candidates, statusTab, search]);
+    const q = search.trim().toLowerCase();
+    if (!q) return candidates;
+    return candidates.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.id.toLowerCase().includes(q) ||
+      c.role.toLowerCase().includes(q)
+    );
+  }, [candidates, search]);
 
   const activeCandidate = candidates.find(c => c.id === selectedId) || candidates[0];
 
-  const readyCount = candidates.filter(c => c.status === 'Ready for review').length;
-  const actionCount = candidates.filter(c => c.status === 'Missing document' || c.status === 'Expired document').length;
-  // Handle Approve action (1-word button)
+      // Handle Approve action (1-word button)
   const handleApprove = () => {
     if (!activeCandidate) return;
     setCandidates(prev => prev.map(c => c.id === activeCandidate.id ? { ...c, status: 'Approved' } : c));
@@ -266,52 +257,6 @@ Audit Status: Verified by SafeRide Admin Engine
                 boxSizing: 'border-box',
               }}
             />
-          </div>
-
-          {/* Minimal Status Tabs - Single Clean Row */}
-          <div style={{ display: 'flex', background: '#F1F5F9', padding: 3, borderRadius: 8, gap: 4 }}>
-            {(['All', 'Ready', 'Action needed'] as const).map(tab => {
-              const active = statusTab === tab;
-              const count = tab === 'All' ? candidates.length : tab === 'Ready' ? readyCount : actionCount;
-              const label = tab === 'All' ? 'All' : tab === 'Ready' ? 'Ready' : 'Action needed';
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setStatusTab(tab)}
-                  style={{
-                    flex: 1,
-                    border: 'none',
-                    padding: '6px 8px',
-                    borderRadius: 6,
-                    fontSize: 12,
-                    fontWeight: active ? 700 : 600,
-                    cursor: 'pointer',
-                    background: active ? '#1B2B68' : 'transparent',
-                    color: active ? '#FFFFFF' : '#64748B',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  <span>{label}</span>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      padding: '1px 5px',
-                      borderRadius: 99,
-                      background: active ? 'rgba(255,255,255,0.2)' : '#E2E8F0',
-                      color: active ? '#FFFFFF' : '#64748B',
-                    }}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
           </div>
 
           {/* Candidates List Container */}

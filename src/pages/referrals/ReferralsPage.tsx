@@ -217,7 +217,7 @@ export default function ReferralsPage() {
       {/* ── Configuration View ── */}
       {activeTab === 'config' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 360px', gap: 24, alignItems: 'start' }}>
-          {/* Left: Configuration Form Wrapped in Unified White Card Container */}
+          {/* Left: Configuration Form with Clean Visual Hierarchy */}
           <div
             style={{
               background: '#FFFFFF',
@@ -227,79 +227,62 @@ export default function ReferralsPage() {
               boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
               display: 'flex',
               flexDirection: 'column',
-              gap: 24,
+              gap: 20,
             }}
           >
-            {/* Header row with Program Status Toggle */}
+            {/* Header: Clean Toggle */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                paddingBottom: 18,
+                paddingBottom: 16,
                 borderBottom: '1px solid #F1F5F9',
               }}
             >
               <div>
-                <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
-                  Program Status &amp; Activation
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1D24', margin: 0 }}>
+                  Enable Referral Program
                 </h2>
-                <p style={{ fontSize: 12, color: '#64748B', margin: '3px 0 0' }}>
-                  Enable or temporarily pause the referral program across all parent apps.
+                <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
+                  Allow parents to invite friends and earn ride credit
                 </p>
               </div>
 
-              {/* Styled Switch */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: cfg.active ? '#059669' : '#94A3B8' }}>
-                  {cfg.active ? 'Enabled' : 'Disabled'}
-                </span>
+              <div
+                onClick={() => setCfg({ ...cfg, active: !cfg.active })}
+                style={{
+                  width: 44,
+                  height: 24,
+                  borderRadius: 99,
+                  background: cfg.active ? '#059669' : '#CBD5E1',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'background 0.2s ease',
+                }}
+              >
                 <div
-                  onClick={() => setCfg({ ...cfg, active: !cfg.active })}
                   style={{
-                    width: 44,
-                    height: 24,
-                    borderRadius: 99,
-                    background: cfg.active ? '#059669' : '#CBD5E1',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    transition: 'background 0.2s ease',
+                    width: 20,
+                    height: 20,
+                    borderRadius: '50%',
+                    background: '#FFFFFF',
+                    position: 'absolute',
+                    top: 2,
+                    left: cfg.active ? 22 : 2,
+                    transition: 'left 0.2s ease',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                   }}
-                >
-                  <div
-                    style={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: '50%',
-                      background: '#FFFFFF',
-                      position: 'absolute',
-                      top: 2,
-                      left: cfg.active ? 22 : 2,
-                      transition: 'left 0.2s ease',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                    }}
-                  />
-                </div>
+                />
               </div>
             </div>
 
-            {/* Section 1: Reward Amount */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
-                  Reward Credit Amount
-                </h3>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: '#EEF2FF', color: '#1B2B68' }}>
-                  CAD Currency
-                </span>
-              </div>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 12px' }}>
-                Wallet credit awarded to both the referring parent and the invited family upon first completed commute.
-              </p>
-
-              <div style={{ maxWidth: 280 }}>
+            {/* Inputs: Clean & Direct */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Reward Amount */}
+              <div style={{ maxWidth: 260 }}>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                  Bonus Amount ($ CAD) *
+                  Reward Amount ($ CAD)
                 </label>
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                   <span style={{ position: 'absolute', left: 12, fontSize: 14, fontWeight: 700, color: '#64748B' }}>$</span>
@@ -311,8 +294,8 @@ export default function ReferralsPage() {
                       setCfg({
                         ...cfg,
                         bonusAmount: newAmt,
-                        title: `Invite school families & earn $${newAmt}`,
-                        description: `Share your link with fellow parents. When an invited family completes their first school ride or walkshare, you both receive $${newAmt} credit towards school rides.`,
+                        title: `Invite school families & earn ${newAmt}`,
+                        description: `Share your link with fellow parents. When an invited family completes their first school ride or walkshare, you both receive ${newAmt} credit towards school rides.`,
                       });
                     }}
                     style={{
@@ -332,76 +315,61 @@ export default function ReferralsPage() {
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Section 2: In-App Parent Message */}
-            <div style={{ paddingTop: 16, borderTop: '1px solid #F1F5F9' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
-                  In-App Parent Share Message
-                </h3>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: '#ECFDF5', color: '#059669' }}>
-                  Live in Parent App
-                </span>
+              {/* Share Headline */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  Share Headline
+                </label>
+                <input
+                  value={cfg.title}
+                  onChange={e => setCfg({ ...cfg, title: e.target.value })}
+                  placeholder="e.g. Invite school families &amp; earn $15"
+                  style={{
+                    width: '100%',
+                    height: 38,
+                    borderRadius: 8,
+                    border: '1px solid #CBD5E1',
+                    padding: '0 12px',
+                    fontSize: 14,
+                    fontFamily: 'Manrope, sans-serif',
+                    fontWeight: 600,
+                    color: '#0F172A',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
               </div>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 16px' }}>
-                Text shown inside the mobile parent app modal when parents open the &ldquo;Invite Friends&rdquo; screen.
-              </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div>
-                  <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                    Modal Headline *
-                  </label>
-                  <input
-                    value={cfg.title}
-                    onChange={e => setCfg({ ...cfg, title: e.target.value })}
-                    placeholder="e.g. Invite school families &amp; earn $15"
-                    style={{
-                      width: '100%',
-                      height: 38,
-                      borderRadius: 8,
-                      border: '1px solid #CBD5E1',
-                      padding: '0 12px',
-                      fontSize: 14,
-                      fontFamily: 'Manrope, sans-serif',
-                      fontWeight: 600,
-                      color: '#0F172A',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                    Modal Explanation &amp; Instructions *
-                  </label>
-                  <textarea
-                    value={cfg.description}
-                    onChange={e => setCfg({ ...cfg, description: e.target.value })}
-                    rows={3}
-                    style={{
-                      width: '100%',
-                      borderRadius: 8,
-                      border: '1px solid #CBD5E1',
-                      padding: '10px 12px',
-                      fontSize: 14,
-                      fontFamily: 'Manrope, sans-serif',
-                      fontWeight: 500,
-                      color: '#0F172A',
-                      outline: 'none',
-                      resize: 'none',
-                      boxSizing: 'border-box',
-                      lineHeight: 1.5,
-                    }}
-                  />
-                </div>
+              {/* Share Message */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  Share Message
+                </label>
+                <textarea
+                  value={cfg.description}
+                  onChange={e => setCfg({ ...cfg, description: e.target.value })}
+                  rows={3}
+                  style={{
+                    width: '100%',
+                    borderRadius: 8,
+                    border: '1px solid #CBD5E1',
+                    padding: '10px 12px',
+                    fontSize: 14,
+                    fontFamily: 'Manrope, sans-serif',
+                    fontWeight: 500,
+                    color: '#0F172A',
+                    outline: 'none',
+                    resize: 'none',
+                    boxSizing: 'border-box',
+                    lineHeight: 1.5,
+                  }}
+                />
               </div>
             </div>
 
             {/* Bottom Save Action */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 10, borderTop: '1px solid #F1F5F9' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 12, borderTop: '1px solid #F1F5F9' }}>
               <button
                 type="button"
                 onClick={save}
@@ -418,7 +386,7 @@ export default function ReferralsPage() {
                   boxShadow: '0 1px 3px rgba(27, 43, 104, 0.2)',
                 }}
               >
-                {saved ? 'Changes Saved!' : 'Save Configuration'}
+                {saved ? 'Changes Saved!' : 'Save Changes'}
               </button>
             </div>
           </div>
