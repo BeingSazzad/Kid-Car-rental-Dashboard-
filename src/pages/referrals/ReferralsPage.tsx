@@ -601,7 +601,7 @@ export default function ReferralsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-                {['ID', 'Referrer', 'Referred', 'Date', 'Status', 'Reward', 'Channel'].map(h => (
+                {['ID', 'Referrer', 'Referred', 'Date', 'Status', 'Reward'].map(h => (
                   <th key={h} style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
                     {h}
                   </th>
@@ -632,7 +632,7 @@ export default function ReferralsPage() {
                   <td style={{ padding: '14px 18px', fontSize: 14, fontWeight: 800, color: r.status === 'Completed' ? '#059669' : '#94A3B8' }}>
                     $${cfg.bonusAmount}
                   </td>
-                  <td style={{ padding: '14px 18px', fontSize: 12, color: '#64748B' }}>{r.channel}</td>
+                  
                 </tr>
               ))}
             </tbody>

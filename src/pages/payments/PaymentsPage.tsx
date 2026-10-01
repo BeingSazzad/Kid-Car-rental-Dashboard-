@@ -196,6 +196,8 @@ export default function PaymentsPage() {
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const [exportNotice, setExportNotice] = useState(false);
   const [receiptNotice, setReceiptNotice] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   const parseMoney = (val: string): number => {
     return parseFloat(val.replace(/[^0-9.]/g, '')) || 0;
@@ -344,6 +346,12 @@ Safe & Reliable Transportation for Students
     setExportNotice(true);
     setTimeout(() => setExportNotice(false), 2600);
   };
+
+  const totalPages = Math.ceil(filteredTransactions.length / pageSize) || 1;
+  const paginatedTransactions = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredTransactions.slice(start, start + pageSize);
+  }, [filteredTransactions, currentPage]);
 
   // Reset all filters
   const handleResetFilters = () => {
@@ -650,27 +658,7 @@ Safe & Reliable Transportation for Students
                   </div>
                 </th>
 
-                <th
-                  onClick={() => handleSort('fee')}
-                  style={thSortStyle(sortField === 'fee')}
-                  title="Click to sort by Platform Fee"
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span>Fee (10%)</span>
-                    {renderSortIcon('fee', sortField, sortOrder)}
-                  </div>
-                </th>
-
-                <th
-                  onClick={() => handleSort('net')}
-                  style={thSortStyle(sortField === 'net')}
-                  title="Click to sort by Net Amount"
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span>Net</span>
-                    {renderSortIcon('net', sortField, sortOrder)}
-                  </div>
-                </th>
+                
 
                 <th
                   onClick={() => handleSort('date')}
@@ -723,7 +711,7 @@ Safe & Reliable Transportation for Students
                   </td>
                 </tr>
               ) : (
-                filteredTransactions.map(t => {
+                paginatedTransactions.map(t => {
                   const sc = statusC[t.status] || { bg: '#F1F5F9', color: '#475569' };
                   return (
                     <tr
@@ -769,19 +757,11 @@ Safe & Reliable Transportation for Students
                         {t.package}
                       </td>
 
-                      {/* Amount */}
-                      <td style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: '#1A1D24' }}>
-                        {t.amount}
-                      </td>
-
-                      {/* Fee */}
-                      <td style={{ padding: '14px 16px', fontSize: 14, fontWeight: 600, color: '#94A3B8' }}>
-                        {t.fee}
-                      </td>
-
-                      {/* Net */}
-                      <td style={{ padding: '14px 16px', fontSize: 14, fontWeight: 800, color: t.status === 'Failed' ? '#94A3B8' : '#10B981' }}>
-                        {t.net}
+                      {/* Minimal Amount */}
+                      <td style={{ padding: '14px 16px' }}>
+                        <span style={{ fontSize: 14, fontWeight: 800, color: t.type === 'Payout' ? '#059669' : '#1A1D24' }}>
+                          {t.type === 'Payout' ? '+' + t.amount : t.amount}
+                        </span>
                       </td>
 
                       {/* Date */}
@@ -836,6 +816,84 @@ Safe & Reliable Transportation for Students
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* ── Minimalist Clean Pagination Bar ── */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px',
+            borderTop: '1px solid #E2E8F0',
+            background: '#FFFFFF',
+            flexWrap: 'wrap',
+            gap: 12,
+          }}
+        >
+          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 500 }}>
+            Showing <strong>{filteredTransactions.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}</strong> to{' '}
+            <strong>{Math.min(currentPage * pageSize, filteredTransactions.length)}</strong> of{' '}
+            <strong>{filteredTransactions.length}</strong> transactions
+          </span>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              style={{
+                height: 32,
+                padding: '0 12px',
+                borderRadius: 6,
+                border: '1px solid #CBD5E1',
+                background: currentPage === 1 ? '#F8FAFC' : '#FFFFFF',
+                color: currentPage === 1 ? '#94A3B8' : '#1B2B68',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+              }}
+            >
+              Previous
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button
+                key={p}
+                onClick={() => setCurrentPage(p)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 6,
+                  border: currentPage === p ? 'none' : '1px solid #CBD5E1',
+                  background: currentPage === p ? '#1B2B68' : '#FFFFFF',
+                  color: currentPage === p ? '#FFFFFF' : '#475569',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                {p}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{
+                height: 32,
+                padding: '0 12px',
+                borderRadius: 6,
+                border: '1px solid #CBD5E1',
+                background: currentPage === totalPages ? '#F8FAFC' : '#FFFFFF',
+                color: currentPage === totalPages ? '#94A3B8' : '#1B2B68',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+              }}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
 

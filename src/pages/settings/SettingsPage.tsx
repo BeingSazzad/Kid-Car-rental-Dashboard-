@@ -213,18 +213,7 @@ export default function SettingsPage() {
             >
               <t.icon size={15} />
               {t.label}
-              {t.key === 'team' && (
-                <span style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  padding: '1px 6px',
-                  borderRadius: 99,
-                  background: active ? 'rgba(255,255,255,0.2)' : '#EEF2F9',
-                  color: active ? '#FFFFFF' : '#1B2B68',
-                }}>
-                  {team.length}
-                </span>
-              )}
+              
             </button>
           );
         })}
@@ -860,8 +849,10 @@ export default function SettingsPage() {
                   }}
                 >
                   <option value="Admin">Admin</option>
-                  <option value="Super Admin">Super Admin</option>
                 </select>
+                <p style={{ fontSize: 11, color: '#64748B', margin: '4px 0 0' }}>
+                  Platform security policy: Only 1 Super Admin allowed. New team invites receive Admin access.
+                </p>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 }}>

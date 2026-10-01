@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  BarChart as HBarChart, Bar as HBar
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
 
@@ -66,14 +65,6 @@ const userGrowthData = [
   { month: 'Nov', parents: 1248, providers: 176 },
 ];
 
-const topEarners = [
-  { name: 'Tariq Ahmed', amount: 2860 },
-  { name: 'Farhana Yasmin', amount: 2410 },
-  { name: 'Alex Rivera', amount: 2200 },
-  { name: 'Kabir Hossain', amount: 1920 },
-  { name: 'Sarah Jenkins', amount: 1580 },
-  { name: 'Sophie Bouchard', amount: 1340 },
-];
 
 const userComposition = [
   { name: 'Parents', value: 1248, color: '#1B2B68' },
@@ -399,17 +390,37 @@ export default function OverviewPage() {
       {/* Charts Row 2: Top Earners + Pie + RAG Gauge */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16 }}>
         {/* Top Earners Bar */}
-        <SectionCard title="Top Earning Providers">
-          <ResponsiveContainer width="100%" height={200}>
-            <HBarChart data={topEarners} layout="vertical" barSize={12} margin={{ left: 0, right: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v.toLocaleString()}`} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#1A1D24', fontWeight: 600 }} axisLine={false} tickLine={false} width={110} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(27, 43, 104, 0.04)' }} />
-              <HBar dataKey="amount" name="Earnings" fill="#1B2B68" radius={[0, 5, 5, 0]} />
-            </HBarChart>
-          </ResponsiveContainer>
-        </SectionCard>
+        <SectionCard title="School Transit Safety & Live Operations">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Child Booster Seats</span>
+                  <p style={{ fontSize: 15, fontWeight: 800, color: '#059669', margin: '4px 0 0' }}>100% Ontario HTA Verified</p>
+                  <span style={{ fontSize: 11, color: '#64748B' }}>Diono & Britax seats secured</span>
+                </div>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Police Sector Clearance</span>
+                  <p style={{ fontSize: 15, fontWeight: 800, color: '#1B2B68', margin: '4px 0 0' }}>100% VSC Cleared</p>
+                  <span style={{ fontSize: 11, color: '#64748B' }}>All drivers & walk escorts vetted</span>
+                </div>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Morning Bell Punctuality</span>
+                  <p style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', margin: '4px 0 0' }}>99.4% On-Time</p>
+                  <span style={{ fontSize: 11, color: '#059669' }}>+0.8% vs last month</span>
+                </div>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Safety Streak</span>
+                  <p style={{ fontSize: 15, fontWeight: 800, color: '#059669', margin: '4px 0 0' }}>42 Safe Days</p>
+                  <span style={{ fontSize: 11, color: '#64748B' }}>Zero safety incidents logged</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#EEF2FF', borderRadius: 8, padding: '10px 14px', fontSize: 12, fontWeight: 600, color: '#1B2B68' }}>
+                <span>Active School Corridors: 14 Van Carpools • 8 Walking School Buses</span>
+                <span style={{ color: '#059669', fontWeight: 800 }}>● Live Fleet Monitored</span>
+              </div>
+            </div>
+          </SectionCard>
 
         {/* Pie Chart */}
         <SectionCard title="Users">

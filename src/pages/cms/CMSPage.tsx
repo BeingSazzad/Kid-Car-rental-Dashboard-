@@ -5,7 +5,7 @@ import { useState } from 'react';
 import {
   Plus, Trash2, Edit2, X, ChevronDown, ChevronUp,
   GripVertical, Check, ArrowUp, ArrowDown, Copy, Shield, FileText, HelpCircle, Info, Search, Phone, Mail, AlertTriangle
-} from 'lucide-react';
+, Upload} from 'lucide-react';
 import { RichTextEditor } from './RichTextEditor';
 
 /* — Types — */
@@ -1243,8 +1243,275 @@ function EmergencyContactsManager() {
 }
 
 /* — MAIN CMS PAGE EXPORT — */
+
+/* — App Screens & Branding Manager Component — */
+function AppBrandingManager() {
+  const [logoUrl, setLogoUrl] = useState('/logo.png');
+  const [splashBg, setSplashBg] = useState('#1B2B68');
+  const [splashText, setSplashText] = useState('Home2School');
+  const [onboardingTitle, setOnboardingTitle] = useState('Welcome to Home2School');
+  const [onboardingSubtitle, setOnboardingSubtitle] = useState('Safe school rides & certified walking escorts for students, trusted by verified neighbourhood families.');
+  const [activeScreenTab, setActiveScreenTab] = useState<'splash' | 'onboarding' | 'logo'>('onboarding');
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2400);
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: 14 }}>
+        <div>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            Mobile App Screens & Brand Assets
+          </h2>
+          <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
+            Dynamically configure the customer mobile app logo, splash loading screen, and onboarding welcome graphics.
+          </p>
+        </div>
+
+        <button
+          onClick={handleSave}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            height: 38,
+            padding: '0 18px',
+            borderRadius: 8,
+            border: 'none',
+            background: '#1B2B68',
+            color: '#FFFFFF',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            boxShadow: '0 2px 4px rgba(27, 43, 104, 0.15)',
+          }}
+        >
+          {saved ? <Check size={16} /> : <Upload size={16} />}
+          <span>{saved ? 'Changes Saved!' : 'Save Brand Assets'}</span>
+        </button>
+      </div>
+
+      {/* Screen Selector Tabs */}
+      <div style={{ display: 'flex', gap: 6, background: '#F1F5F9', padding: 4, borderRadius: 10, width: 'fit-content' }}>
+        <button
+          onClick={() => setActiveScreenTab('onboarding')}
+          style={{
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            background: activeScreenTab === 'onboarding' ? '#FFFFFF' : 'transparent',
+            color: activeScreenTab === 'onboarding' ? '#1B2B68' : '#64748B',
+            boxShadow: activeScreenTab === 'onboarding' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+          }}
+        >
+          📱 Onboarding Screen
+        </button>
+        <button
+          onClick={() => setActiveScreenTab('splash')}
+          style={{
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            background: activeScreenTab === 'splash' ? '#FFFFFF' : 'transparent',
+            color: activeScreenTab === 'splash' ? '#1B2B68' : '#64748B',
+            boxShadow: activeScreenTab === 'splash' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+          }}
+        >
+          🚀 Splash Loading Screen
+        </button>
+        <button
+          onClick={() => setActiveScreenTab('logo')}
+          style={{
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            background: activeScreenTab === 'logo' ? '#FFFFFF' : 'transparent',
+            color: activeScreenTab === 'logo' ? '#1B2B68' : '#64748B',
+            boxShadow: activeScreenTab === 'logo' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+          }}
+        >
+          🏷️ App Emblem Logo
+        </button>
+      </div>
+
+      {/* Editor & Smartphone Mockup Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) 340px', gap: 24, alignItems: 'start' }}>
+        {/* Left Form Controls */}
+        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {activeScreenTab === 'onboarding' && (
+            <>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
+                  Main Welcome Headline
+                </label>
+                <input
+                  value={onboardingTitle}
+                  onChange={e => setOnboardingTitle(e.target.value)}
+                  style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontWeight: 600, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
+                  Tagline / Description Text
+                </label>
+                <textarea
+                  rows={3}
+                  value={onboardingSubtitle}
+                  onChange={e => setOnboardingSubtitle(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 13, fontWeight: 500, color: '#0F172A', outline: 'none', boxSizing: 'border-box', resize: 'vertical' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
+                  Hero Image
+                </label>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <input
+                    defaultValue="/images/van-hero.jpg"
+                    style={{ flex: 1, height: 38, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 13, color: '#0F172A', outline: 'none' }}
+                  />
+                  <button style={{ height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #CBD5E1', background: '#F8FAFC', fontSize: 12, fontWeight: 700, color: '#1B2B68', cursor: 'pointer' }}>
+                    Browse
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeScreenTab === 'splash' && (
+            <>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
+                  Splash Background Color
+                </label>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <input
+                    type="color"
+                    value={splashBg}
+                    onChange={e => setSplashBg(e.target.value)}
+                    style={{ width: 44, height: 40, borderRadius: 8, border: '1px solid #CBD5E1', cursor: 'pointer', padding: 2 }}
+                  />
+                  <input
+                    value={splashBg}
+                    onChange={e => setSplashBg(e.target.value)}
+                    style={{ flex: 1, height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontFamily: 'monospace', color: '#0F172A', outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
+                  Splash Brand Wordmark
+                </label>
+                <input
+                  value={splashText}
+                  onChange={e => setSplashText(e.target.value)}
+                  style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontWeight: 600, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+            </>
+          )}
+
+          {activeScreenTab === 'logo' && (
+            <>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
+                  Official App Emblem Path / URL
+                </label>
+                <input
+                  value={logoUrl}
+                  onChange={e => setLogoUrl(e.target.value)}
+                  style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '14px', fontSize: 12, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <strong style={{ color: '#0F172A' }}>Asset Guidelines:</strong>
+                <span>• Dimensions: Minimum 512 x 512 px PNG with alpha transparency</span>
+                <span>• Used across: Mobile app icon, Topbar emblem, and official receipt PDF headers</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Right Smartphone Frame Live Mockup */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Live Phone Preview
+          </span>
+
+          <div
+            style={{
+              width: 300,
+              height: 580,
+              borderRadius: 36,
+              border: '10px solid #0F172A',
+              boxShadow: '0 20px 30px rgba(0,0,0,0.18)',
+              overflow: 'hidden',
+              background: activeScreenTab === 'splash' ? splashBg : '#F8FAFC',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+            }}
+          >
+            {/* Speaker Notch */}
+            <div style={{ width: 100, height: 16, background: '#0F172A', borderRadius: '0 0 12px 12px', margin: '0 auto', position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }} />
+
+            {activeScreenTab === 'splash' ? (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: '#FFFFFF' }}>
+                <img src={logoUrl} alt="Logo" style={{ width: 110, height: 110, objectFit: 'contain' }} />
+                <h3 style={{ fontSize: 24, fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
+                  {splashText}
+                </h3>
+              </div>
+            ) : (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 18px 24px', justifyContent: 'space-between' }}>
+                <div style={{ width: '100%', height: 220, borderRadius: 16, background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <img src={logoUrl} alt="Hero" style={{ width: 120, height: 120, objectFit: 'contain' }} />
+                </div>
+
+                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <h4 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                    {onboardingTitle}
+                  </h4>
+                  <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5, margin: 0 }}>
+                    {onboardingSubtitle}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ background: '#1B2B68', color: '#FFFFFF', padding: '10px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+                    Sign up for free
+                  </div>
+                  <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', color: '#1B2B68', padding: '9px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+                    Sign in
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CMSPage() {
-  const [activeTab, setActiveTab] = useState<'faq' | 'tos' | 'privacy' | 'about' | 'emergency'>('about');
+  const [activeTab, setActiveTab] = useState<'faq' | 'tos' | 'privacy' | 'about' | 'emergency' | 'branding'>('about');
   const [pagesData, setPagesData] = useState<Record<string, PolicyPageData>>(initPages);
 
   const handlePublishPage = (key: string, updatedData: PolicyPageData) => {
@@ -1320,7 +1587,9 @@ export default function CMSPage() {
         }}>
           {activeTab === 'faq' ? (
             <FAQManager />
-          ) : activeTab === 'emergency' ? (
+          ) : activeTab === 'branding' ? (
+          <AppBrandingManager />
+        ) : activeTab === 'emergency' ? (
             <EmergencyContactsManager />
           ) : (
             <PolicyClauseManager

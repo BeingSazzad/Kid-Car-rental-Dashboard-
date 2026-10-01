@@ -10,7 +10,7 @@ const NAV = [
   { label: 'Overview', icon: LayoutDashboard, to: ROUTES.OVERVIEW },
   { label: 'Users', icon: Users, to: ROUTES.USERS },
   { label: 'Trips', icon: MapPin, to: ROUTES.TRIPS },
-  { label: 'Payments', icon: CreditCard, to: ROUTES.PAYMENTS },
+  { label: 'Transactions', icon: CreditCard, to: ROUTES.PAYMENTS },
   { label: 'KYC Queue', icon: ShieldCheck, to: ROUTES.KYC, badge: 4 },
   { label: 'Referrals', icon: Gift, to: ROUTES.REFERRALS },
   { label: 'Push Broadcasts', icon: Megaphone, to: ROUTES.NOTIFICATIONS },
