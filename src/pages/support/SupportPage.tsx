@@ -791,95 +791,68 @@ export default function SupportPage() {
               </button>
             </div>
 
-            {/* Quick Actions & Status Control Bar */}
+            {/* Clean Clutter-Free Meta Strip */}
             <div
               style={{
-                padding: '14px 24px',
+                padding: '12px 24px',
                 borderBottom: '1px solid #F1F5F9',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: 12,
-                background: '#fff',
+                background: '#FAFCFF',
+                flexWrap: 'wrap',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B' }}>Status:</span>
-                {(['Open', 'In Progress', 'Resolved'] as const).map(st => {
-                  const active = selectedTicket.status === st;
-                  const sc = statusConfig[st];
-                  return (
-                    <button
-                      key={st}
-                      onClick={() => handleUpdateStatus(selectedTicket.id, st)}
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: 6,
-                        border: active ? `1px solid ${sc.dot}` : '1px solid #E2E8F0',
-                        background: active ? sc.bg : '#F8FAFC',
-                        color: active ? sc.color : '#64748B',
-                        fontSize: 12,
-                        fontWeight: active ? 700 : 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {st}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {selectedTicket.tripId && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1B2B68', background: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>
-                    Ride: {selectedTicket.tripId}
-                  </div>
-                  <button
-                    onClick={() => handleIssueRefund(selectedTicket)}
-                    disabled={selectedTicket.status === 'Resolved'}
+              {/* Left: Requester & Status */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B' }}>Status:</span>
+                  <select
+                    value={selectedTicket.status}
+                    onChange={e => handleUpdateStatus(selectedTicket.id, e.target.value as any)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      background: selectedTicket.status === 'Resolved' ? '#F1F5F9' : '#ECFDF5',
-                      border: selectedTicket.status === 'Resolved' ? '1px solid #E2E8F0' : '1px solid #A7F3D0',
-                      color: selectedTicket.status === 'Resolved' ? '#94A3B8' : '#059669',
-                      padding: '4px 10px',
+                      height: 30,
+                      padding: '0 10px',
                       borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      background: statusConfig[selectedTicket.status].bg,
+                      color: statusConfig[selectedTicket.status].color,
                       fontSize: 12,
                       fontWeight: 700,
-                      cursor: selectedTicket.status === 'Resolved' ? 'default' : 'pointer',
-                      transition: 'all 0.15s ease',
+                      cursor: 'pointer',
+                      outline: 'none',
                     }}
                   >
-                    <span>{refundIssued ? '✓ Refund Credited ($12.50 CAD)' : '⚡ Issue $12.50 Trip Refund'}</span>
-                  </button>
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                  </select>
                 </div>
-              )}
-            </div>
 
-            {/* User Details Mini Card */}
-            <div style={{ padding: '16px 24px', borderBottom: '1px solid #F1F5F9', background: '#FAFCFF' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
-                Requester Information
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24', margin: 0 }}>
-                    {selectedTicket.user} ({selectedTicket.role})
-                  </p>
-                  <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                    {selectedTicket.email} · {selectedTicket.phone}
-                  </p>
+                <div style={{ width: 1, height: 16, background: '#CBD5E1' }} />
+
+                <div style={{ fontSize: 12, color: '#334155' }}>
+                  <span style={{ fontWeight: 700, color: '#0F172A' }}>{selectedTicket.user}</span> ({selectedTicket.role}) · <span style={{ color: '#64748B' }}>{selectedTicket.email}</span>
                 </div>
+              </div>
+
+              {/* Right: Priority & Optional Trip Tag */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {selectedTicket.tripId && (
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#1B2B68', background: '#EEF2FF', padding: '3px 8px', borderRadius: 6, border: '1px solid #C7D2FE' }}>
+                    Ride: {selectedTicket.tripId}
+                  </span>
+                )}
                 <span
                   style={{
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: 700,
                     padding: '3px 8px',
                     borderRadius: 6,
                     background: priorityConfig[selectedTicket.priority].bg,
                     color: priorityConfig[selectedTicket.priority].color,
+                    border: '1px solid ' + priorityConfig[selectedTicket.priority].border,
                   }}
                 >
                   {selectedTicket.priority} Priority

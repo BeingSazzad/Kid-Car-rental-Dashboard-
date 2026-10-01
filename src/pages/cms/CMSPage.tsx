@@ -1208,12 +1208,14 @@ function AppBrandingManager() {
   const [onboardingTitle, setOnboardingTitle] = useState('Welcome to Home2School');
   const [onboardingSubtitle, setOnboardingSubtitle] = useState('Safe school rides & certified walking escorts for students, trusted by verified neighbourhood families.');
   
-  const [splashImage, setSplashImage] = useState('/logo.png');
+  // Splash Screen 2 Components: Background + Middle Center Logo
+  const [splashLogo, setSplashLogo] = useState('/logo.png');
   const [splashBg, setSplashBg] = useState('#1B2B68');
-  const [splashText, setSplashText] = useState('Home2School');
+  const [splashBgImage, setSplashBgImage] = useState<string | null>(null);
+  const [splashSubtitle, setSplashSubtitle] = useState('Safe School Commute');
 
   const [logoImage, setLogoImage] = useState('/logo.png');
-  const [activeScreenTab, setActiveScreenTab] = useState<'onboarding' | 'splash' | 'logo'>('onboarding');
+  const [activeScreenTab, setActiveScreenTab] = useState<'onboarding' | 'splash' | 'logo'>('splash');
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -1258,7 +1260,7 @@ function AppBrandingManager() {
         <div style={{ display: 'flex', gap: 6, background: '#F1F5F9', padding: 4, borderRadius: 10, width: 'fit-content' }}>
           {(['onboarding', 'splash', 'logo'] as const).map(tab => {
             const isSelected = activeScreenTab === tab;
-            const label = tab === 'onboarding' ? 'Onboarding Screen' : tab === 'splash' ? 'Splash Loading Screen' : 'App Emblem Logo';
+            const label = tab === 'onboarding' ? 'Onboarding Screen' : tab === 'splash' ? 'Splash Screen' : 'App Logo';
             return (
               <button
                 key={tab}
@@ -1324,11 +1326,79 @@ function AppBrandingManager() {
 
           {activeScreenTab === 'splash' && (
             <>
+              {/* 1. Splash Center Logo (Square 1:1 PNG with transparency) */}
               <SimpleImageUpload
-                label="Full Splash Screen Image"
-                recommendedRatio="430 × 932 px (19.5:9 Mobile Standard)"
-                currentImage={splashImage}
-                onImageChange={setSplashImage}
+                label="1. Splash Center Logo"
+                recommendedRatio="512 × 512 px (1:1 Square PNG/SVG)"
+                currentImage={splashLogo}
+                onImageChange={setSplashLogo}
+              />
+
+              {/* 2. Splash Background Color */}
+              <div style={{ background: '#F8FAFC', padding: 16, borderRadius: 12, border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                  2. Splash Screen Background Color
+                </label>
+                <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
+                  Select brand preset or pick custom color for the splash background.
+                </p>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  {[
+                    { name: 'Navy Brand', hex: '#1B2B68' },
+                    { name: 'Dark Slate', hex: '#0F172A' },
+                    { name: 'Pure White', hex: '#FFFFFF' },
+                    { name: 'Soft Light', hex: '#F8FAFC' },
+                    { name: 'Emerald', hex: '#059669' },
+                  ].map(c => (
+                    <button
+                      key={c.hex}
+                      type="button"
+                      onClick={() => { setSplashBg(c.hex); setSplashBgImage(null); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '6px 12px',
+                        borderRadius: 8,
+                        border: splashBg === c.hex && !splashBgImage ? '2px solid #1B2B68' : '1px solid #CBD5E1',
+                        background: '#FFFFFF',
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: '#334155',
+                      }}
+                    >
+                      <span style={{ width: 14, height: 14, borderRadius: '50%', background: c.hex, border: '1px solid rgba(0,0,0,0.1)' }} />
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+                  <input
+                    type="color"
+                    value={splashBg}
+                    onChange={e => { setSplashBg(e.target.value); setSplashBgImage(null); }}
+                    style={{ width: 38, height: 38, border: 'none', borderRadius: 8, cursor: 'pointer', padding: 0 }}
+                  />
+                  <input
+                    type="text"
+                    value={splashBg}
+                    onChange={e => { setSplashBg(e.target.value); setSplashBgImage(null); }}
+                    placeholder="#1B2B68"
+                    style={{ width: 110, height: 38, padding: '0 10px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 13, fontWeight: 700, fontFamily: 'monospace' }}
+                  />
+                  <span style={{ fontSize: 12, color: '#94A3B8' }}>Hex Code</span>
+                </div>
+              </div>
+
+              {/* Optional Background Artwork / Pattern */}
+              <SimpleImageUpload
+                label="3. Optional Full Background Artwork / Pattern"
+                recommendedRatio="430 × 932 px (Leave empty to use solid background color)"
+                currentImage={splashBgImage || ''}
+                onImageChange={setSplashBgImage}
               />
             </>
           )}
@@ -1336,7 +1406,7 @@ function AppBrandingManager() {
           {activeScreenTab === 'logo' && (
             <>
               <SimpleImageUpload
-                label="App Emblem Logo"
+                label="App Logo"
                 recommendedRatio="512 × 512 px (1:1 Square)"
                 currentImage={logoImage}
                 onImageChange={setLogoImage}
@@ -1370,17 +1440,84 @@ function AppBrandingManager() {
             <div style={{ width: 90, height: 14, background: '#0F172A', borderRadius: '0 0 10px 10px', margin: '0 auto', position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }} />
 
             {activeScreenTab === 'splash' ? (
-              <div style={{ flex: 1, width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#1B2B68' }}>
-                <img
-                  src={splashImage}
-                  alt="Splash Screen Full Art"
+              <div
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  height: '100%',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  background: splashBg,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {/* Background image if set */}
+                {splashBgImage && (
+                  <img
+                    src={splashBgImage}
+                    alt="Splash Background Artwork"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      opacity: 0.85,
+                      zIndex: 1,
+                    }}
+                  />
+                )}
+
+                {/* Middle Center Logo (No stretching! Pure contain in center) */}
+                <div
                   style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
+                    width: 140,
+                    height: 140,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2,
                   }}
-                />
+                >
+                  <img
+                    src={splashLogo}
+                    alt="Splash Center Logo"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                      filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.22))',
+                    }}
+                  />
+                </div>
+
+                {/* Bottom Tagline */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 36,
+                    left: 0,
+                    right: 0,
+                    textAlign: 'center',
+                    zIndex: 2,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 800,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: splashBg === '#FFFFFF' || splashBg === '#F8FAFC' ? '#1B2B68' : 'rgba(255,255,255,0.75)',
+                      margin: 0,
+                    }}
+                  >
+                    {splashSubtitle}
+                  </p>
+                </div>
               </div>
             ) : activeScreenTab === 'logo' ? (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 16px 20px', justifyContent: 'space-between', background: '#F8FAFC' }}>
@@ -1392,7 +1529,7 @@ function AppBrandingManager() {
                     Home2School
                   </h4>
                   <p style={{ fontSize: 11, color: '#64748B', margin: 0 }}>
-                    App Icon (512 × 512 px)
+                    App Logo (512 × 512 px)
                   </p>
                 </div>
 
@@ -1431,7 +1568,6 @@ function AppBrandingManager() {
     </div>
   );
 }
-
 
 export default function CMSPage() {
   const [activeTab, setActiveTab] = useState<'faq' | 'tos' | 'privacy' | 'about' | 'emergency' | 'branding'>('about');

@@ -16,7 +16,7 @@ interface TeamMember {
 const INITIAL_TEAM: TeamMember[] = [
   {
     id: '1',
-    name: 'Super Admin',
+    name: 'Sazzad Hossain',
     email: 'admin@home2school.ca',
     role: 'Super Admin',
     joinedDate: 'Aug 1, 2026',
@@ -63,7 +63,7 @@ export default function SettingsPage() {
   const [successToast, setSuccessToast] = useState('');
 
   // Profile Form state
-  const [fullName, setFullName] = useState('Super Admin');
+  const [fullName, setFullName] = useState('Sazzad Hossain');
   const [email] = useState('admin@home2school.ca');
   const [profileSaved, setProfileSaved] = useState(false);
 
@@ -237,17 +237,21 @@ export default function SettingsPage() {
                 flexShrink: 0,
               }}
             >
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>SA</span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>
+                {(fullName || 'Sazzad Hossain').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+              </span>
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <p style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: 0 }}>Super Admin</p>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: '#1B2B68', color: '#FFFFFF' }}>
+                <p style={{ fontSize: 18, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
+                  {fullName || 'Sazzad Hossain'}
+                </p>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: '#1B2B68', color: '#FFFFFF' }}>
                   Super Admin
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 4px' }}>admin@home2school.ca</p>
-              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: '#EEF2FF', color: '#1B2B68' }}>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '3px 0 6px' }}>admin@home2school.ca</p>
+              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: '#EEF2FF', color: '#1B2B68', border: '1px solid #C7D2FE' }}>
                 Primary Root Authority
               </span>
             </div>

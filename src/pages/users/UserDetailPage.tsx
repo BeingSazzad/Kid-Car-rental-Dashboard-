@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Phone, Mail, MapPin, AlertTriangle, ShieldCheck, Car,
   CheckCircle2, Baby, UserCheck, Award, Ban, Check, Send,
-  Users, Footprints, Clock, ShieldAlert, GraduationCap, Star
+  Users, Footprints, Clock, ShieldAlert, GraduationCap, Star, X, MessageSquare
 } from 'lucide-react';
 import { INITIAL_USERS, UserItem, UserRole } from '@/constants/mockUsers';
 
@@ -22,6 +22,13 @@ export default function UserDetailPage() {
   );
 
   const [notificationSent, setNotificationSent] = useState(false);
+  // Direct Notice / Warning Modal
+  const [noticeModalOpen, setNoticeModalOpen] = useState(false);
+  const [noticeType, setNoticeType] = useState<'Warning' | 'Advisory' | 'Message'>('Warning');
+  const [noticeTitle, setNoticeTitle] = useState('Punctuality & Commute Safety Advisory');
+  const [noticeBody, setNoticeBody] = useState('');
+  const [noticeChannels, setNoticeChannels] = useState({ push: true, sms: true, email: true });
+  const [noticeSuccessToast, setNoticeSuccessToast] = useState<string | null>(null);
 
   const handleToggleBan = () => {
     setUsers(prev =>
@@ -33,9 +40,32 @@ export default function UserDetailPage() {
     );
   };
 
-  const handleSendNotification = () => {
-    setNotificationSent(true);
-    setTimeout(() => setNotificationSent(false), 3000);
+  const handleOpenNoticeModal = () => {
+    setNoticeTitle(
+      noticeType === 'Warning'
+        ? 'Service Warning: Commute Safety & Guidelines'
+        : noticeType === 'Advisory'
+        ? 'Account Advisory: Verification & Standards'
+        : 'Important Update from Home2School'
+    );
+    setNoticeBody('');
+    setNoticeModalOpen(true);
+  };
+
+  const handleSendNoticeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!noticeBody.trim()) {
+      alert('Please enter notice text before sending.');
+      return;
+    }
+    setNoticeModalOpen(false);
+    const channelNames = [
+      noticeChannels.push && 'Push',
+      noticeChannels.sms && 'SMS',
+      noticeChannels.email && 'Email',
+    ].filter(Boolean).join(', ');
+    setNoticeSuccessToast(`${noticeType} notice dispatched to ${currentUser.name} via ${channelNames || 'Push'}.`);
+    setTimeout(() => setNoticeSuccessToast(null), 4000);
   };
 
   const roleStyles: Record<UserRole, { bg: string; color: string; border: string }> = {
@@ -80,7 +110,7 @@ export default function UserDetailPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
-            onClick={handleSendNotification}
+            onClick={handleOpenNoticeModal}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -977,6 +1007,278 @@ export default function UserDetailPage() {
           </div>
         )}
       </div>
+    
+      {/* ── Toast Feedback ── */}
+      {noticeSuccessToast && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            background: '#0F172A',
+            color: '#FFFFFF',
+            padding: '12px 20px',
+            borderRadius: 10,
+            fontSize: 13,
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+            zIndex: 100,
+          }}
+        >
+          <CheckCircle2 size={16} color="#10B981" />
+          <span>{noticeSuccessToast}</span>
+        </div>
+      )}
+
+      {/* ── Direct Notice & Warning Modal ── */}
+      {noticeModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.55)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99,
+            padding: 16,
+          }}
+          onClick={() => setNoticeModalOpen(false)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#FFFFFF',
+              borderRadius: 16,
+              width: 520,
+              maxWidth: '100%',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+              border: '1px solid #E2E8F0',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: '18px 22px',
+                borderBottom: '1px solid #F1F5F9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: '#F8FAFC',
+              }}
+            >
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                  Send Direct Notice to {currentUser.name}
+                </h3>
+                <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
+                  {currentUser.phone} · {currentUser.email}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setNoticeModalOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#64748B',
+                  padding: 4,
+                  display: 'flex',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleSendNoticeSubmit} style={{ padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Notice Type Selector */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 8 }}>
+                  Notice Category / Severity
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                  {[
+                    { key: 'Warning', label: 'Warning', color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
+                    { key: 'Advisory', label: 'Advisory', color: '#B45309', bg: '#FFFBEB', border: '#FDE68A' },
+                    { key: 'Message', label: 'Message', color: '#1B2B68', bg: '#EEF2FF', border: '#C7D2FE' },
+                  ].map(t => {
+                    const isSelected = noticeType === t.key;
+                    return (
+                      <button
+                        key={t.key}
+                        type="button"
+                        onClick={() => {
+                          setNoticeType(t.key as any);
+                          setNoticeTitle(
+                            t.key === 'Warning'
+                              ? 'Service Warning: Commute Safety & Guidelines'
+                              : t.key === 'Advisory'
+                              ? 'Account Advisory: Verification & Standards'
+                              : 'Important Update from Home2School'
+                          );
+                        }}
+                        style={{
+                          padding: '8px 10px',
+                          borderRadius: 8,
+                          border: isSelected ? `2px solid ${t.color}` : '1px solid #E2E8F0',
+                          background: isSelected ? t.bg : '#FFFFFF',
+                          color: isSelected ? t.color : '#64748B',
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6,
+                        }}
+                      >
+                        {t.key === 'Warning' && <AlertTriangle size={13} />}
+                        {t.key === 'Advisory' && <ShieldAlert size={13} />}
+                        {t.key === 'Message' && <MessageSquare size={13} />}
+                        <span>{t.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Subject Title */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  Notice Subject *
+                </label>
+                <input
+                  type="text"
+                  value={noticeTitle}
+                  onChange={e => setNoticeTitle(e.target.value)}
+                  style={{
+                    width: '100%',
+                    height: 38,
+                    borderRadius: 8,
+                    border: '1px solid #CBD5E1',
+                    padding: '0 12px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: '#0F172A',
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+
+              {/* Notice Message Body */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  Message Content *
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="Type the formal warning, advisory, or direct instructions for this user..."
+                  value={noticeBody}
+                  onChange={e => setNoticeBody(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: 8,
+                    border: '1px solid #CBD5E1',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#0F172A',
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                    resize: 'vertical',
+                    fontFamily: 'Manrope, sans-serif',
+                  }}
+                />
+              </div>
+
+              {/* Delivery Channels */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  Delivery Channels
+                </label>
+                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={noticeChannels.push}
+                      onChange={e => setNoticeChannels({ ...noticeChannels, push: e.target.checked })}
+                    />
+                    App Push Notification
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={noticeChannels.sms}
+                      onChange={e => setNoticeChannels({ ...noticeChannels, sms: e.target.checked })}
+                    />
+                    SMS ({currentUser.phone})
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={noticeChannels.email}
+                      onChange={e => setNoticeChannels({ ...noticeChannels, email: e.target.checked })}
+                    />
+                    Email
+                  </label>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => setNoticeModalOpen(false)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    border: '1px solid #E2E8F0',
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 18px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: noticeType === 'Warning' ? '#DC2626' : '#1B2B68',
+                    color: '#FFFFFF',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: noticeType === 'Warning' ? '0 2px 6px rgba(220, 38, 38, 0.25)' : '0 2px 6px rgba(27, 43, 104, 0.25)',
+                  }}
+                >
+                  <Send size={14} />
+                  <span>Send {noticeType}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

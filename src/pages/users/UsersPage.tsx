@@ -24,7 +24,7 @@ export default function UsersPage() {
   const [search, setSearch] = useState('');
   const [roleTab, setRoleTab] = useState<'All' | 'Parents' | 'Drivers' | 'Walkers' | 'Multi-Role'>('All');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Pending' | 'Banned'>('All');
-  const [sortBy, setSortBy] = useState<'joined' | 'name' | 'trips' | 'spent'>('joined');
+  const [sortBy, setSortBy] = useState<'joined' | 'name' | 'status'>('joined');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   
   // Role Tab Counts
@@ -66,14 +66,8 @@ export default function UsersPage() {
       .sort((a, b) => {
         let diff = 0;
         if (sortBy === 'name') diff = a.name.localeCompare(b.name);
-        else if (sortBy === 'trips') diff = a.trips - b.trips;
-        else if (sortBy === 'spent') {
-          const sA = parseFloat(a.spent.replace(/[^0-9.]/g, '')) || 0;
-          const sB = parseFloat(b.spent.replace(/[^0-9.]/g, '')) || 0;
-          diff = sA - sB;
-        } else {
-          diff = a.id.localeCompare(b.id);
-        }
+        else if (sortBy === 'status') diff = a.status.localeCompare(b.status);
+        else diff = a.id.localeCompare(b.id);
         return sortOrder === 'asc' ? diff : -diff;
       });
   }, [users, search, roleTab, statusFilter, sortBy, sortOrder]);
@@ -246,8 +240,7 @@ export default function UsersPage() {
             >
               <option value="joined">Sort: Joined</option>
               <option value="name">Sort: Name</option>
-              <option value="trips">Sort: Trips</option>
-              <option value="spent">Sort: Volume</option>
+              <option value="status">Sort: Status</option>
             </select>
             <ChevronDown size={14} style={{ position: 'absolute', right: 10, color: '#64748B', pointerEvents: 'none' }} />
           </div>
@@ -307,26 +300,9 @@ export default function UsersPage() {
             <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
               <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>User</th>
               <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Roles</th>
-              <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Contact</th>
+              <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Phone</th>
+              <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Email</th>
               <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Joined</th>
-              <th
-                onClick={() => handleToggleSort('trips')}
-                style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', cursor: 'pointer' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span>Trips</span>
-                  <ArrowUpDown size={12} />
-                </div>
-              </th>
-              <th
-                onClick={() => handleToggleSort('spent')}
-                style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', cursor: 'pointer' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span>Financial Activity</span>
-                  <ArrowUpDown size={12} />
-                </div>
-              </th>
               <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Status</th>
               <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', textAlign: 'right' }}>Actions</th>
             </tr>
@@ -334,7 +310,7 @@ export default function UsersPage() {
           <tbody>
             {filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#94A3B8', fontSize: 14 }}>
+                <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#94A3B8', fontSize: 14 }}>
                   No users found matching query
                 </td>
               </tr>
@@ -376,19 +352,18 @@ export default function UsersPage() {
                         <p style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', margin: 0 }}>
                           {u.name}
                         </p>
-                        <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>
+                        <p style={{ fontSize: 11, color: '#94A3B8', margin: '2px 0 0', fontWeight: 600 }}>
                           {u.id}
                         </p>
                       </div>
                     </div>
                   </td>
 
-                  {/* Multi-Role Capabilities */}
+                  {/* Clean Role Badges */}
                   <td style={{ padding: '14px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                       {u.roles.map(r => {
                         const style = roleStyles[r];
-                        const isActive = u.activeRole === r;
                         return (
                           <span
                             key={r}
@@ -400,63 +375,30 @@ export default function UsersPage() {
                               background: style.bg,
                               color: style.color,
                               border: '1px solid ' + style.border,
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
-                              gap: 4,
                             }}
                           >
-                            {isActive && <span style={{ width: 6, height: 6, borderRadius: '50%', background: style.color }} />}
                             {r}
                           </span>
                         );
                       })}
-                      {u.roles.length === 2 && (
-                        <span style={{ fontSize: 10, fontWeight: 700, color: '#64748B', background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, border: '1px solid #E2E8F0' }}>
-                          Dual-Mode
-                        </span>
-                      )}
-                      {u.roles.length >= 3 && (
-                        <span style={{ fontSize: 10, fontWeight: 700, color: '#7C3AED', background: '#EDE9FE', padding: '2px 6px', borderRadius: 4, border: '1px solid #DDD6FE' }}>
-                          Multi-Role
-                        </span>
-                      )}
                     </div>
                   </td>
 
-                  {/* Contact */}
-                  <td style={{ padding: '14px 18px' }}>
-                    <p style={{ fontSize: 12, fontWeight: 600, color: '#334155', margin: 0 }}>{u.phone}</p>
-                    <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>{u.email}</p>
+                  {/* Phone */}
+                  <td style={{ padding: '14px 18px', fontSize: 13, fontWeight: 600, color: '#334155' }}>
+                    {u.phone}
+                  </td>
+
+                  {/* Email */}
+                  <td style={{ padding: '14px 18px', fontSize: 13, color: '#64748B' }}>
+                    {u.email}
                   </td>
 
                   {/* Joined Date */}
-                  <td style={{ padding: '14px 18px', fontSize: 12, color: '#64748B' }}>
+                  <td style={{ padding: '14px 18px', fontSize: 13, color: '#64748B' }}>
                     {u.joined}
-                  </td>
-
-                  {/* Trips */}
-                  <td style={{ padding: '14px 18px', fontSize: 14, fontWeight: 700, color: '#0F172A' }}>
-                    {u.trips}
-                  </td>
-
-                  {/* Financial Activity (Role-Aware) */}
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      <span
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 800,
-                          color: u.roles.includes('Driver') || u.roles.includes('Walker') ? '#059669' : '#1B2B68',
-                        }}
-                      >
-                        {u.spent}
-                      </span>
-                      <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8' }}>
-                        {u.roles.includes('Driver') || u.roles.includes('Walker')
-                          ? (u.roles.includes('Parent') ? 'Earned & Spent' : 'Total Earned')
-                          : 'Total Spent'}
-                      </span>
-                    </div>
                   </td>
 
                   {/* Status */}
@@ -484,7 +426,7 @@ export default function UsersPage() {
                           navigate(`/users/${u.id}`);
                         }}
                         style={{
-                          padding: '6px 12px',
+                          padding: '6px 14px',
                           borderRadius: 8,
                           border: '1px solid #E2E8F0',
                           background: '#FFFFFF',
@@ -500,7 +442,7 @@ export default function UsersPage() {
                       <button
                         onClick={e => handleToggleBan(u.id, e)}
                         style={{
-                          padding: '6px 10px',
+                          padding: '6px 12px',
                           borderRadius: 8,
                           border: '1px solid #E2E8F0',
                           background: u.status === 'Banned' ? '#ECFDF5' : '#FFF5F5',

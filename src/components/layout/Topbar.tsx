@@ -367,9 +367,9 @@ export default function Topbar() {
                 justifyContent: 'center',
               }}
             >
-              <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>SA</span>
+              <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>SH</span>
             </div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24' }}>Super Admin</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24' }}>Sazzad Hossain</span>
             <ChevronDown size={14} style={{ color: '#94A3B8', transform: profileOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease' }} />
           </div>
 
@@ -395,24 +395,39 @@ export default function Topbar() {
               {/* Profile Card Header */}
               <div style={{ padding: '10px 12px', borderBottom: '1px solid #F1F5F9', marginBottom: 4 }}>
                 <p style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                  Super Admin
+                  Sazzad Hossain
                 </p>
                 <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 4px' }}>
                   admin@home2school.ca
                 </p>
-                <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: '#059669',
-                    background: '#ECFDF5',
-                    padding: '2px 6px',
-                    borderRadius: 4,
-                    display: 'inline-block',
-                  }}
-                >
-                  ● Active Session
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: '#1B2B68',
+                      background: '#EEF2FF',
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      display: 'inline-block',
+                    }}
+                  >
+                    Super Admin
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: '#059669',
+                      background: '#ECFDF5',
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      display: 'inline-block',
+                    }}
+                  >
+                    ● Active Session
+                  </span>
+                </div>
               </div>
 
               {/* Navigation Actions */}
