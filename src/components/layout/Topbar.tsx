@@ -392,42 +392,25 @@ export default function Topbar() {
                 flexDirection: 'column',
               }}
             >
-              {/* Profile Card Header */}
+              {/* Profile Card Header (Clean & Minimal) */}
               <div style={{ padding: '10px 12px', borderBottom: '1px solid #F1F5F9', marginBottom: 4 }}>
                 <p style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
                   Sazzad Chowdhury
                 </p>
-                <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 4px' }}>
-                  admin@home2school.ca
-                </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: '#1B2B68',
-                      background: '#EEF2FF',
-                      padding: '2px 6px',
-                      borderRadius: 4,
-                      display: 'inline-block',
-                    }}
-                  >
-                    Super Admin
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: '#059669',
-                      background: '#ECFDF5',
-                      padding: '2px 6px',
-                      borderRadius: 4,
-                      display: 'inline-block',
-                    }}
-                  >
-                    ● Active Session
-                  </span>
-                </div>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#1B2B68',
+                    background: '#EEF2FF',
+                    padding: '2px 8px',
+                    borderRadius: 4,
+                    display: 'inline-block',
+                    marginTop: 4,
+                  }}
+                >
+                  Super Admin
+                </span>
               </div>
 
               {/* Navigation Actions */}
