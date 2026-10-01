@@ -4,7 +4,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   BarChart as HBarChart, Bar as HBar
 } from 'recharts';
-import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, ChevronRight, Calendar } from 'lucide-react';
+import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
 
 /* ─── Revenue Data by Year with 3 Streams: Parents, Drivers & WalkShare ─── */
 const REVENUE_BY_YEAR: Record<string, Array<{ month: string; parent: number; driver: number; walkshare: number }>> = {
@@ -342,14 +342,12 @@ export default function OverviewPage() {
           title="Revenue Breakdown"
           extra={
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Calendar size={14} style={{ color: '#64748B' }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Year:</span>
               <select
                 value={revenueYear}
                 onChange={e => setRevenueYear(e.target.value)}
                 style={{
                   height: 30,
-                  padding: '0 10px',
+                  padding: '0 28px 0 10px',
                   borderRadius: 6,
                   border: '1px solid #CBD5E1',
                   background: '#FFFFFF',
@@ -359,9 +357,10 @@ export default function OverviewPage() {
                   color: '#1B2B68',
                   outline: 'none',
                   cursor: 'pointer',
+                  appearance: 'auto',
                 }}
               >
-                <option value="2026">2026 (Current)</option>
+                <option value="2026">2026</option>
                 <option value="2025">2025</option>
                 <option value="2024">2024</option>
               </select>

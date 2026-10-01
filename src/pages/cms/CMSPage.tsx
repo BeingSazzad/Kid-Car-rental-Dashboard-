@@ -4,7 +4,7 @@ function createId(prefix: string) {
 import { useState } from 'react';
 import {
   Plus, Trash2, Edit2, X, ChevronDown, ChevronUp,
-  GripVertical, Check, ArrowUp, ArrowDown, Copy, Shield, FileText, HelpCircle, Info, Search
+  GripVertical, Check, ArrowUp, ArrowDown, Copy, Shield, FileText, HelpCircle, Info, Search, Phone, Mail, AlertTriangle
 } from 'lucide-react';
 import { RichTextEditor } from './RichTextEditor';
 
@@ -108,6 +108,7 @@ const PAGE_TABS = [
   { key: 'privacy', label: 'Privacy Policy', icon: Shield },
   { key: 'tos', label: 'Terms & Conditions', icon: FileText },
   { key: 'about', label: 'About Us', icon: Info },
+  { key: 'emergency', label: 'Emergency Contacts', icon: AlertTriangle },
 ];
 
 /* — Helper UI components — */
@@ -1005,9 +1006,245 @@ function FAQManager() {
   );
 }
 
+
+/* — Emergency Contacts Manager Component — */
+interface EmergencyContact {
+  id: string;
+  label: string;
+  phone: string;
+  email: string;
+}
+
+const initEmergencyContacts: EmergencyContact[] = [
+  { id: 'emg-1', label: 'Safety Operations', phone: '+1 (416) 555-0100', email: 'safety@home2school.ca' },
+  { id: 'emg-2', label: 'Parent Support Hotline', phone: '+1 (416) 555-0102', email: 'support@home2school.ca' },
+  { id: 'emg-3', label: 'Driver & Provider Relations', phone: '+1 (416) 555-0104', email: 'drivers@home2school.ca' },
+];
+
+function EmergencyContactsManager() {
+  const [contacts, setContacts] = useState<EmergencyContact[]>(initEmergencyContacts);
+  const [saved, setSaved] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [formLabel, setFormLabel] = useState('');
+  const [formPhone, setFormPhone] = useState('');
+  const [formEmail, setFormEmail] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const triggerSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
+
+  const openAdd = () => {
+    setFormLabel(''); setFormPhone(''); setFormEmail('');
+    setFormError(null); setActiveId(null);
+    setModalMode('create'); setModalOpen(true);
+  };
+
+  const openEdit = (c: EmergencyContact) => {
+    setFormLabel(c.label); setFormPhone(c.phone); setFormEmail(c.email);
+    setFormError(null); setActiveId(c.id);
+    setModalMode('edit'); setModalOpen(true);
+  };
+
+  const handleSave = () => {
+    if (!formLabel.trim() || !formPhone.trim() || !formEmail.trim()) {
+      setFormError('All fields are required.'); return;
+    }
+    if (modalMode === 'create') {
+      setContacts([...contacts, { id: createId('emg'), label: formLabel.trim(), phone: formPhone.trim(), email: formEmail.trim() }]);
+    } else if (activeId) {
+      setContacts(contacts.map(c => c.id === activeId
+        ? { ...c, label: formLabel.trim(), phone: formPhone.trim(), email: formEmail.trim() }
+        : c
+      ));
+    }
+    setModalOpen(false); triggerSave();
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('Remove this contact?')) { setContacts(contacts.filter(c => c.id !== id)); triggerSave(); }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', height: 40, borderRadius: 8,
+    border: '1px solid #CBD5E1', padding: '0 12px',
+    fontSize: 14, fontWeight: 600, color: '#0F172A',
+    background: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
+    fontFamily: 'Manrope, sans-serif',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 11, fontWeight: 700, color: '#64748B',
+    display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em',
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '14px 20px', borderBottom: '1px solid #E2E8F0',
+      }}>
+        <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>Emergency Contacts</h2>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <SaveIndicator show={saved} />
+          <button
+            type="button" onClick={openAdd}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, height: 34,
+              padding: '0 14px', borderRadius: 8, background: '#1B2B68',
+              color: '#fff', border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            }}
+          >
+            <Plus size={13} /> Add Contact
+          </button>
+        </div>
+      </div>
+
+      {/* Contacts Table */}
+      <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {contacts.map((c) => (
+          <div
+            key={c.id}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '12px 16px', borderRadius: 10,
+              border: '1px solid #E2E8F0', background: '#FFFFFF', gap: 16,
+            }}
+          >
+            {/* Label */}
+            <span style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', minWidth: 180, flexShrink: 0 }}>
+              {c.label}
+            </span>
+
+            {/* Phone */}
+            <a
+              href={`tel:${c.phone}`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                fontSize: 13, fontWeight: 600, color: '#1B2B68',
+                textDecoration: 'none', flex: 1,
+              }}
+            >
+              <Phone size={13} style={{ flexShrink: 0, opacity: 0.6 }} />
+              {c.phone}
+            </a>
+
+            {/* Email */}
+            <a
+              href={`mailto:${c.email}`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                fontSize: 13, fontWeight: 600, color: '#64748B',
+                textDecoration: 'none', flex: 1,
+              }}
+            >
+              <Mail size={13} style={{ flexShrink: 0, opacity: 0.6 }} />
+              {c.email}
+            </a>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+              <button type="button" onClick={() => openEdit(c)} style={iconBtnStyle} title="Edit">
+                <Edit2 size={13} />
+              </button>
+              <button type="button" onClick={() => handleDelete(c.id)} style={{ ...iconBtnStyle, color: '#EF4444' }} title="Delete">
+                <Trash2 size={13} />
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {contacts.length === 0 && (
+          <p style={{ textAlign: 'center', padding: '32px 0', fontSize: 14, color: '#94A3B8', fontWeight: 600 }}>
+            No emergency contacts added yet.
+          </p>
+        )}
+      </div>
+
+      {/* Add / Edit Modal */}
+      {modalOpen && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.45)',
+            backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', padding: 20, zIndex: 100,
+          }}
+          onClick={() => setModalOpen(false)}
+        >
+          <div
+            style={{
+              width: '100%', maxWidth: 480, background: '#FFFFFF', borderRadius: 16,
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', display: 'flex',
+              flexDirection: 'column', overflow: 'hidden', border: '1px solid #E2E8F0',
+              fontFamily: 'Manrope, sans-serif',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{
+              padding: '14px 20px', borderBottom: '1px solid #E2E8F0',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: '#F8FAFC',
+            }}>
+              <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                {modalMode === 'create' ? 'Add Contact' : 'Edit Contact'}
+              </h3>
+              <button
+                type="button" onClick={() => setModalOpen(false)}
+                style={{
+                  width: 28, height: 28, borderRadius: 7, border: '1px solid #E2E8F0',
+                  background: '#FFFFFF', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', cursor: 'pointer', color: '#64748B',
+                }}
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {formError && (
+                <div style={{ padding: '7px 12px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 7, color: '#DC2626', fontSize: 12, fontWeight: 700 }}>
+                  {formError}
+                </div>
+              )}
+              <div>
+                <label style={labelStyle}>Label</label>
+                <input value={formLabel} onChange={e => setFormLabel(e.target.value)} placeholder="e.g. Safety Operations" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Phone Number</label>
+                <input value={formPhone} onChange={e => setFormPhone(e.target.value)} placeholder="+1 (416) 555-0100" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Email Address</label>
+                <input value={formEmail} onChange={e => setFormEmail(e.target.value)} placeholder="safety@home2school.ca" style={inputStyle} />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{
+              padding: '12px 20px', borderTop: '1px solid #E2E8F0', background: '#F8FAFC',
+              display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
+            }}>
+              <button type="button" onClick={() => setModalOpen(false)} style={{ height: 34, padding: '0 14px', borderRadius: 8, border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                Cancel
+              </button>
+              <button type="button" onClick={handleSave} style={{ height: 34, padding: '0 16px', borderRadius: 8, border: 'none', background: '#1B2B68', color: '#FFFFFF', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* — MAIN CMS PAGE EXPORT — */
 export default function CMSPage() {
-  const [activeTab, setActiveTab] = useState<'faq' | 'tos' | 'privacy' | 'about'>('about');
+  const [activeTab, setActiveTab] = useState<'faq' | 'tos' | 'privacy' | 'about' | 'emergency'>('about');
   const [pagesData, setPagesData] = useState<Record<string, PolicyPageData>>(initPages);
 
   const handlePublishPage = (key: string, updatedData: PolicyPageData) => {
@@ -1083,6 +1320,8 @@ export default function CMSPage() {
         }}>
           {activeTab === 'faq' ? (
             <FAQManager />
+          ) : activeTab === 'emergency' ? (
+            <EmergencyContactsManager />
           ) : (
             <PolicyClauseManager
               key={activeTab}

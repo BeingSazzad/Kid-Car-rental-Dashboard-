@@ -479,7 +479,7 @@ export default function SupportPage() {
               width: '100%',
               height: 36,
               paddingLeft: 34,
-              paddingRight: 12,
+              paddingRight: 28,
               borderRadius: 8,
               border: '1px solid #E2E8F0',
               background: '#F8FAFC',

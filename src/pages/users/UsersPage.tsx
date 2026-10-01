@@ -586,9 +586,14 @@ export default function UsersPage() {
                           </span>
                         );
                       })}
-                      {u.roles.length > 1 && (
-                        <span style={{ fontSize: 10, fontWeight: 700, color: '#64748B', background: '#F1F5F9', padding: '2px 6px', borderRadius: 4 }}>
+                      {u.roles.length === 2 && (
+                        <span style={{ fontSize: 10, fontWeight: 700, color: '#64748B', background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, border: '1px solid #E2E8F0' }}>
                           Dual-Mode
+                        </span>
+                      )}
+                      {u.roles.length >= 3 && (
+                        <span style={{ fontSize: 10, fontWeight: 700, color: '#7C3AED', background: '#EDE9FE', padding: '2px 6px', borderRadius: 4, border: '1px solid #DDD6FE' }}>
+                          Multi-Role
                         </span>
                       )}
                     </div>
