@@ -367,9 +367,9 @@ export default function Topbar() {
                 justifyContent: 'center',
               }}
             >
-              <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>SH</span>
+              <span style={{ fontSize: 12, fontWeight: 800, color: '#fff' }}>SC</span>
             </div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24' }}>Sazzad Hossain</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24' }}>Sazzad Chowdhury</span>
             <ChevronDown size={14} style={{ color: '#94A3B8', transform: profileOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease' }} />
           </div>
 
@@ -395,7 +395,7 @@ export default function Topbar() {
               {/* Profile Card Header */}
               <div style={{ padding: '10px 12px', borderBottom: '1px solid #F1F5F9', marginBottom: 4 }}>
                 <p style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                  Sazzad Hossain
+                  Sazzad Chowdhury
                 </p>
                 <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 4px' }}>
                   admin@home2school.ca

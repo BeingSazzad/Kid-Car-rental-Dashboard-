@@ -16,7 +16,7 @@ interface TeamMember {
 const INITIAL_TEAM: TeamMember[] = [
   {
     id: '1',
-    name: 'Sazzad Hossain',
+    name: 'Sazzad Chowdhury',
     email: 'admin@home2school.ca',
     role: 'Super Admin',
     joinedDate: 'Aug 1, 2026',
@@ -63,7 +63,7 @@ export default function SettingsPage() {
   const [successToast, setSuccessToast] = useState('');
 
   // Profile Form state
-  const [fullName, setFullName] = useState('Sazzad Hossain');
+  const [fullName, setFullName] = useState('Sazzad Chowdhury');
   const [email] = useState('admin@home2school.ca');
   const [profileSaved, setProfileSaved] = useState(false);
 
@@ -238,13 +238,13 @@ export default function SettingsPage() {
               }}
             >
               <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>
-                {(fullName || 'Sazzad Hossain').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                {(fullName || 'Sazzad Chowdhury').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase()}
               </span>
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <p style={{ fontSize: 18, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
-                  {fullName || 'Sazzad Hossain'}
+                  {fullName || 'Sazzad Chowdhury'}
                 </p>
                 <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: '#1B2B68', color: '#FFFFFF' }}>
                   Super Admin
