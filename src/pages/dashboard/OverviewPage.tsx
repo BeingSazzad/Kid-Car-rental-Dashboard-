@@ -52,19 +52,49 @@ const REVENUE_BY_YEAR: Record<string, Array<{ month: string; parent: number; dri
   ],
 };
 
-const userGrowthData = [
-  { month: 'Jan', parents: 210, drivers: 28, walkers: 10 },
-  { month: 'Feb', parents: 280, drivers: 38, walkers: 14 },
-  { month: 'Mar', parents: 340, drivers: 45, walkers: 16 },
-  { month: 'Apr', parents: 420, drivers: 56, walkers: 18 },
-  { month: 'May', parents: 510, drivers: 68, walkers: 20 },
-  { month: 'Jun', parents: 620, drivers: 76, walkers: 23 },
-  { month: 'Jul', parents: 750, drivers: 89, walkers: 26 },
-  { month: 'Aug', parents: 880, drivers: 104, walkers: 28 },
-  { month: 'Sep', parents: 1020, drivers: 118, walkers: 30 },
-  { month: 'Oct', parents: 1160, drivers: 130, walkers: 32 },
-  { month: 'Nov', parents: 1248, drivers: 142, walkers: 34 },
-];
+const USER_GROWTH_BY_YEAR: Record<string, Array<{ month: string; parents: number; drivers: number; walkers: number }>> = {
+  '2026': [
+    { month: 'Jan', parents: 210, drivers: 28, walkers: 10 },
+    { month: 'Feb', parents: 280, drivers: 38, walkers: 14 },
+    { month: 'Mar', parents: 340, drivers: 45, walkers: 16 },
+    { month: 'Apr', parents: 420, drivers: 56, walkers: 18 },
+    { month: 'May', parents: 510, drivers: 68, walkers: 20 },
+    { month: 'Jun', parents: 620, drivers: 76, walkers: 23 },
+    { month: 'Jul', parents: 750, drivers: 89, walkers: 26 },
+    { month: 'Aug', parents: 880, drivers: 104, walkers: 28 },
+    { month: 'Sep', parents: 1020, drivers: 118, walkers: 30 },
+    { month: 'Oct', parents: 1160, drivers: 130, walkers: 32 },
+    { month: 'Nov', parents: 1248, drivers: 142, walkers: 34 },
+  ],
+  '2025': [
+    { month: 'Jan', parents: 80, drivers: 12, walkers: 4 },
+    { month: 'Feb', parents: 110, drivers: 16, walkers: 6 },
+    { month: 'Mar', parents: 140, drivers: 20, walkers: 8 },
+    { month: 'Apr', parents: 180, drivers: 24, walkers: 10 },
+    { month: 'May', parents: 220, drivers: 28, walkers: 12 },
+    { month: 'Jun', parents: 260, drivers: 32, walkers: 15 },
+    { month: 'Jul', parents: 310, drivers: 38, walkers: 18 },
+    { month: 'Aug', parents: 380, drivers: 46, walkers: 22 },
+    { month: 'Sep', parents: 450, drivers: 54, walkers: 26 },
+    { month: 'Oct', parents: 520, drivers: 62, walkers: 30 },
+    { month: 'Nov', parents: 590, drivers: 70, walkers: 35 },
+    { month: 'Dec', parents: 670, drivers: 80, walkers: 40 },
+  ],
+  '2024': [
+    { month: 'Jan', parents: 20, drivers: 4, walkers: 2 },
+    { month: 'Feb', parents: 30, drivers: 6, walkers: 3 },
+    { month: 'Mar', parents: 45, drivers: 8, walkers: 4 },
+    { month: 'Apr', parents: 60, drivers: 10, walkers: 5 },
+    { month: 'May', parents: 80, drivers: 12, walkers: 6 },
+    { month: 'Jun', parents: 100, drivers: 15, walkers: 7 },
+    { month: 'Jul', parents: 120, drivers: 18, walkers: 8 },
+    { month: 'Aug', parents: 145, drivers: 22, walkers: 10 },
+    { month: 'Sep', parents: 175, drivers: 26, walkers: 12 },
+    { month: 'Oct', parents: 210, drivers: 30, walkers: 14 },
+    { month: 'Nov', parents: 240, drivers: 34, walkers: 16 },
+    { month: 'Dec', parents: 280, drivers: 40, walkers: 18 },
+  ],
+};
 
 
 const userComposition = [
@@ -310,6 +340,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function OverviewPage() {
   const navigate = useNavigate();
   const [revenueYear, setRevenueYear] = useState('2026');
+  const [growthYear, setGrowthYear] = useState('2026');
+  const currentGrowthData = USER_GROWTH_BY_YEAR[growthYear] || USER_GROWTH_BY_YEAR['2026'];
   const totalUsers = userComposition.reduce((a, b) => a + b.value, 0);
 
   const kpis = [
@@ -379,9 +411,36 @@ export default function OverviewPage() {
           </ResponsiveContainer>
         </SectionCard>
 
-        <SectionCard title="User Growth">
+        <SectionCard
+          title="User Growth"
+          extra={
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <select
+                value={growthYear}
+                onChange={e => setGrowthYear(e.target.value)}
+                style={{
+                  height: 30,
+                  padding: '0 28px 0 10px',
+                  borderRadius: 6,
+                  border: '1px solid #CBD5E1',
+                  background: '#FFFFFF',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  fontFamily: 'Manrope, sans-serif',
+                  color: '#1B2B68',
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+              >
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+              </select>
+            </div>
+          }
+        >
           <ResponsiveContainer width="100%" height={230}>
-            <LineChart data={userGrowthData}>
+            <LineChart data={currentGrowthData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
@@ -424,33 +483,44 @@ export default function OverviewPage() {
           </table>
         </SectionCard>
 
-        {/* Pie Chart: Users Composition */}
-        <SectionCard title="Users">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <div style={{ position: 'relative' }}>
-              <PieChart width={150} height={150}>
-                <Pie data={userComposition} cx={75} cy={75} innerRadius={45} outerRadius={68} dataKey="value" strokeWidth={0}>
-                  {userComposition.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                </Pie>
-              </PieChart>
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center' }}>
-                <p style={{ fontSize: 20, fontWeight: 800, color: '#1A1D24', lineHeight: 1 }}>{totalUsers.toLocaleString()}</p>
-                <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Total</p>
+        {/* Users by role (Horizontal Progress Bars) */}
+        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '20px 22px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            Users by role
+          </h3>
+          <p style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', margin: '4px 0 24px' }}>
+            {totalUsers.toLocaleString()} total
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Parents */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <span style={{ width: 75, fontSize: 13, fontWeight: 600, color: '#334155' }}>Parents</span>
+              <div style={{ flex: 1, height: 10, background: '#F1F5F9', borderRadius: 99, overflow: 'hidden' }}>
+                <div style={{ width: `${(1248 / totalUsers) * 100}%`, height: '100%', background: '#1B2B68', borderRadius: 99 }} />
               </div>
+              <span style={{ width: 45, textAlign: 'right', fontSize: 13, fontWeight: 700, color: '#0F172A' }}>1,248</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
-              {userComposition.map((d) => (
-                <div key={d.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>{d.name}</span>
-                  </div>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#1A1D24' }}>{d.value}</span>
-                </div>
-              ))}
+
+            {/* Drivers */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <span style={{ width: 75, fontSize: 13, fontWeight: 600, color: '#334155' }}>Drivers</span>
+              <div style={{ flex: 1, height: 10, background: '#F1F5F9', borderRadius: 99, overflow: 'hidden' }}>
+                <div style={{ width: `${(142 / totalUsers) * 100}%`, height: '100%', background: '#F2600C', borderRadius: 99 }} />
+              </div>
+              <span style={{ width: 45, textAlign: 'right', fontSize: 13, fontWeight: 700, color: '#0F172A' }}>142</span>
+            </div>
+
+            {/* WalkShare */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <span style={{ width: 75, fontSize: 13, fontWeight: 600, color: '#334155' }}>WalkShare</span>
+              <div style={{ flex: 1, height: 10, background: '#F1F5F9', borderRadius: 99, overflow: 'hidden' }}>
+                <div style={{ width: `${(34 / totalUsers) * 100}%`, height: '100%', background: '#10B981', borderRadius: 99 }} />
+              </div>
+              <span style={{ width: 45, textAlign: 'right', fontSize: 13, fontWeight: 700, color: '#0F172A' }}>34</span>
             </div>
           </div>
-        </SectionCard>
+        </div>
       </div>
     </div>
   );

@@ -255,12 +255,7 @@ function PolicyClauseManager({
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>{data.title}</h2>
-          <span style={{
-            fontSize: 12, fontWeight: 700, background: '#EEF2F9',
-            color: '#1B2B68', padding: '3px 9px', borderRadius: 6,
-          }}>
-            {data.clauses.length} Sections
-          </span>
+          
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1007,266 +1002,108 @@ function FAQManager() {
 
 
 /* — Emergency Contacts Manager Component — */
-interface EmergencyContact {
-  id: string;
-  label: string;
-  phone: string;
-  email: string;
-}
-
-const initEmergencyContacts: EmergencyContact[] = [
-  { id: 'emg-1', label: 'Safety Operations', phone: '+1 (416) 555-0100', email: 'safety@home2school.ca' },
-  { id: 'emg-2', label: 'Parent Support Hotline', phone: '+1 (416) 555-0102', email: 'support@home2school.ca' },
-  { id: 'emg-3', label: 'Driver & Provider Relations', phone: '+1 (416) 555-0104', email: 'drivers@home2school.ca' },
-];
-
+/* — EMERGENCY CONTACTS (SIMPLE 2-FIELD MANAGER) — */
 function EmergencyContactsManager() {
-  const [contacts, setContacts] = useState<EmergencyContact[]>(initEmergencyContacts);
+  const [phone, setPhone] = useState('+1 (416) 555-0100');
+  const [email, setEmail] = useState('safety@home2school.ca');
   const [saved, setSaved] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [formLabel, setFormLabel] = useState('');
-  const [formPhone, setFormPhone] = useState('');
-  const [formEmail, setFormEmail] = useState('');
-  const [formError, setFormError] = useState<string | null>(null);
-
-  const triggerSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
-
-  const openAdd = () => {
-    setFormLabel(''); setFormPhone(''); setFormEmail('');
-    setFormError(null); setActiveId(null);
-    setModalMode('create'); setModalOpen(true);
-  };
-
-  const openEdit = (c: EmergencyContact) => {
-    setFormLabel(c.label); setFormPhone(c.phone); setFormEmail(c.email);
-    setFormError(null); setActiveId(c.id);
-    setModalMode('edit'); setModalOpen(true);
-  };
 
   const handleSave = () => {
-    if (!formLabel.trim() || !formPhone.trim() || !formEmail.trim()) {
-      setFormError('All fields are required.'); return;
-    }
-    if (modalMode === 'create') {
-      setContacts([...contacts, { id: createId('emg'), label: formLabel.trim(), phone: formPhone.trim(), email: formEmail.trim() }]);
-    } else if (activeId) {
-      setContacts(contacts.map(c => c.id === activeId
-        ? { ...c, label: formLabel.trim(), phone: formPhone.trim(), email: formEmail.trim() }
-        : c
-      ));
-    }
-    setModalOpen(false); triggerSave();
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm('Remove this contact?')) { setContacts(contacts.filter(c => c.id !== id)); triggerSave(); }
-  };
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%', height: 40, borderRadius: 8,
-    border: '1px solid #CBD5E1', padding: '0 12px',
-    fontSize: 14, fontWeight: 600, color: '#0F172A',
-    background: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
-    fontFamily: 'Manrope, sans-serif',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: 11, fontWeight: 700, color: '#64748B',
-    display: 'block', marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.04em',
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 20px', borderBottom: '1px solid #E2E8F0',
+        padding: '18px 24px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF',
       }}>
-        <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>Emergency Contacts</h2>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <SaveIndicator show={saved} />
-          <button
-            type="button" onClick={openAdd}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6, height: 34,
-              padding: '0 14px', borderRadius: 8, background: '#1B2B68',
-              color: '#fff', border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
-            }}
-          >
-            <Plus size={13} /> Add Contact
-          </button>
-        </div>
-      </div>
+        <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+          Emergency Contacts
+        </h2>
 
-      {/* Contacts Table */}
-      <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {contacts.map((c) => (
-          <div
-            key={c.id}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '12px 16px', borderRadius: 10,
-              border: '1px solid #E2E8F0', background: '#FFFFFF', gap: 16,
-            }}
-          >
-            {/* Label */}
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', minWidth: 180, flexShrink: 0 }}>
-              {c.label}
-            </span>
-
-            {/* Phone */}
-            <a
-              href={`tel:${c.phone}`}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                fontSize: 13, fontWeight: 600, color: '#1B2B68',
-                textDecoration: 'none', flex: 1,
-              }}
-            >
-              <Phone size={13} style={{ flexShrink: 0, opacity: 0.6 }} />
-              {c.phone}
-            </a>
-
-            {/* Email */}
-            <a
-              href={`mailto:${c.email}`}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                fontSize: 13, fontWeight: 600, color: '#64748B',
-                textDecoration: 'none', flex: 1,
-              }}
-            >
-              <Mail size={13} style={{ flexShrink: 0, opacity: 0.6 }} />
-              {c.email}
-            </a>
-
-            {/* Actions */}
-            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-              <button type="button" onClick={() => openEdit(c)} style={iconBtnStyle} title="Edit">
-                <Edit2 size={13} />
-              </button>
-              <button type="button" onClick={() => handleDelete(c.id)} style={{ ...iconBtnStyle, color: '#EF4444' }} title="Delete">
-                <Trash2 size={13} />
-              </button>
-            </div>
-          </div>
-        ))}
-
-        {contacts.length === 0 && (
-          <p style={{ textAlign: 'center', padding: '32px 0', fontSize: 14, color: '#94A3B8', fontWeight: 600 }}>
-            No emergency contacts added yet.
-          </p>
-        )}
-      </div>
-
-      {/* Add / Edit Modal */}
-      {modalOpen && (
-        <div
+        <button
+          type="button"
+          onClick={handleSave}
           style={{
-            position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.45)',
-            backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', padding: 20, zIndex: 100,
+            display: 'flex', alignItems: 'center', gap: 6,
+            height: 36, padding: '0 18px', borderRadius: 8,
+            border: 'none', background: '#1B2B68', color: '#FFFFFF',
+            fontSize: 13, fontWeight: 700, cursor: 'pointer',
+            boxShadow: '0 1px 3px rgba(27, 43, 104, 0.2)',
           }}
-          onClick={() => setModalOpen(false)}
         >
-          <div
-            style={{
-              width: '100%', maxWidth: 480, background: '#FFFFFF', borderRadius: 16,
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', display: 'flex',
-              flexDirection: 'column', overflow: 'hidden', border: '1px solid #E2E8F0',
-              fontFamily: 'Manrope, sans-serif',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div style={{
-              padding: '14px 20px', borderBottom: '1px solid #E2E8F0',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              background: '#F8FAFC',
-            }}>
-              <h3 style={{ fontSize: 14, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                {modalMode === 'create' ? 'Add Contact' : 'Edit Contact'}
-              </h3>
-              <button
-                type="button" onClick={() => setModalOpen(false)}
-                style={{
-                  width: 28, height: 28, borderRadius: 7, border: '1px solid #E2E8F0',
-                  background: '#FFFFFF', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', cursor: 'pointer', color: '#64748B',
-                }}
-              >
-                <X size={14} />
-              </button>
-            </div>
+          {saved ? <Check size={16} /> : null}
+          <span>{saved ? 'Saved!' : 'Save Changes'}</span>
+        </button>
+      </div>
 
-            {/* Modal Body */}
-            <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {formError && (
-                <div style={{ padding: '7px 12px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 7, color: '#DC2626', fontSize: 12, fontWeight: 700 }}>
-                  {formError}
-                </div>
-              )}
-              <div>
-                <label style={labelStyle}>Label</label>
-                <input value={formLabel} onChange={e => setFormLabel(e.target.value)} placeholder="e.g. Safety Operations" style={inputStyle} />
-              </div>
-              <div>
-                <label style={labelStyle}>Phone Number</label>
-                <input value={formPhone} onChange={e => setFormPhone(e.target.value)} placeholder="+1 (416) 555-0100" style={inputStyle} />
-              </div>
-              <div>
-                <label style={labelStyle}>Email Address</label>
-                <input value={formEmail} onChange={e => setFormEmail(e.target.value)} placeholder="safety@home2school.ca" style={inputStyle} />
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div style={{
-              padding: '12px 20px', borderTop: '1px solid #E2E8F0', background: '#F8FAFC',
-              display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
-            }}>
-              <button type="button" onClick={() => setModalOpen(false)} style={{ height: 34, padding: '0 14px', borderRadius: 8, border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#64748B', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                Cancel
-              </button>
-              <button type="button" onClick={handleSave} style={{ height: 34, padding: '0 16px', borderRadius: 8, border: 'none', background: '#1B2B68', color: '#FFFFFF', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                Save
-              </button>
-            </div>
+      {/* Direct 2-Field Form: Phone Number & Email */}
+      <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 540 }}>
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 8 }}>
+            Emergency Contact Number
+          </label>
+          <div style={{ position: 'relative' }}>
+            <Phone size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+            <input
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              placeholder="+1 (416) 555-0100"
+              style={{
+                width: '100%', height: 42, padding: '0 14px 0 40px',
+                borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14,
+                fontWeight: 600, color: '#0F172A', outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
           </div>
         </div>
-      )}
+
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 8 }}>
+            Emergency Support Email
+          </label>
+          <div style={{ position: 'relative' }}>
+            <Mail size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+            <input
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="safety@home2school.ca"
+              style={{
+                width: '100%', height: 42, padding: '0 14px 0 40px',
+                borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14,
+                fontWeight: 600, color: '#0F172A', outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-/* — MAIN CMS PAGE EXPORT — */
-
-/* — App Screens & Branding Manager Component — */
-/* — Dedicated Standard Ratio Image Upload Zone — */
-function ImageUploadDropzone({
+/* — CLEAN IMAGE UPLOAD COMPONENT WITH STANDARD RATIOS — */
+function SimpleImageUpload({
   label,
   recommendedRatio,
-  standardType,
   currentImage,
   onImageChange,
-  previewHeight = 140,
 }: {
   label: string;
   recommendedRatio: string;
-  standardType: string;
   currentImage: string;
   onImageChange: (dataUrl: string) => void;
-  previewHeight?: number;
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [fileDetails, setFileDetails] = useState<{ name: string; size: string } | null>(null);
-  const fileInputRef = useState<{ current: HTMLInputElement | null }>({ current: null })[0];
 
   const handleFile = (file: File) => {
     if (!file || !file.type.startsWith('image/')) {
-      alert('Please upload a valid image file (PNG, JPG, SVG, WebP)');
+      alert('Please upload an image file (PNG, JPG, SVG, WebP)');
       return;
     }
     const sizeKB = (file.size / 1024).toFixed(1);
@@ -1284,14 +1121,6 @@ function ImageUploadDropzone({
     reader.readAsDataURL(file);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
@@ -1299,199 +1128,115 @@ function ImageUploadDropzone({
           {label}
         </label>
         <span style={{ fontSize: 11, fontWeight: 700, background: '#EEF2FF', color: '#1B2B68', padding: '3px 8px', borderRadius: 6, border: '1px solid #C7D2FE' }}>
-          Standard Ratio: {recommendedRatio}
+          Standard: {recommendedRatio}
         </span>
       </div>
 
-      <input
-        type="file"
-        ref={(el) => { fileInputRef.current = el; }}
-        accept="image/png,image/jpeg,image/webp,image/svg+xml"
-        style={{ display: 'none' }}
-        onChange={(e) => {
-          if (e.target.files && e.target.files[0]) {
-            handleFile(e.target.files[0]);
-          }
-        }}
-      />
-
-      {/* Upload Box Container */}
-      <div
+      <label
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+          if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+        }}
         style={{
           border: `2px dashed ${isDragging ? '#1B2B68' : '#CBD5E1'}`,
-          background: isDragging ? '#F0F4FF' : '#F8FAFC',
+          background: isDragging ? '#EEF2FF' : '#F8FAFC',
           borderRadius: 12,
-          padding: 18,
+          padding: '16px 20px',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          gap: 12,
+          gap: 16,
+          cursor: 'pointer',
           transition: 'all 0.15s ease',
         }}
       >
-        {currentImage ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, width: '100%' }}>
-            {/* Image Preview Box */}
-            <div
-              style={{
-                width: 90,
-                height: 90,
-                borderRadius: 10,
-                background: '#FFFFFF',
-                border: '1px solid #E2E8F0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                flexShrink: 0,
-                boxShadow: '0 2px 5px rgba(0,0,0,0.04)',
-                padding: 4,
-              }}
-            >
-              <img
-                src={currentImage}
-                alt="Uploaded Asset"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain',
-                }}
-              />
-            </div>
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/svg+xml"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            if (e.target.files?.[0]) handleFile(e.target.files[0]);
+          }}
+        />
 
-            {/* File Info & Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <CheckCircle size={15} color="#059669" />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
-                  {fileDetails ? fileDetails.name : 'Active Graphic Loaded'}
-                </span>
-                {fileDetails && (
-                  <span style={{ fontSize: 11, color: '#64748B' }}>({fileDetails.size})</span>
-                )}
-              </div>
+        <div
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 10,
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            flexShrink: 0,
+            padding: 4,
+          }}
+        >
+          <img
+            src={currentImage}
+            alt="Asset Preview"
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+          />
+        </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 11, color: '#059669', background: '#ECFDF5', padding: '2px 8px', borderRadius: 99, fontWeight: 700 }}>
-                  ✓ Standard {standardType}
-                </span>
-                <span style={{ fontSize: 11, color: '#64748B' }}>
-                  Aspect Ratio: {recommendedRatio}
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    padding: '6px 12px',
-                    borderRadius: 6,
-                    border: '1px solid #1B2B68',
-                    background: '#1B2B68',
-                    color: '#FFFFFF',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <UploadCloud size={13} />
-                  <span>Upload New Image</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    onImageChange('/logo.png');
-                    setFileDetails(null);
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    padding: '6px 12px',
-                    borderRadius: 6,
-                    border: '1px solid #CBD5E1',
-                    background: '#FFFFFF',
-                    color: '#64748B',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  <RotateCcw size={12} />
-                  <span>Reset Default</span>
-                </button>
-              </div>
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <UploadCloud size={16} color="#1B2B68" />
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#1B2B68' }}>
+              {fileDetails ? fileDetails.name : 'Click to Upload Image'}
+            </span>
+            {fileDetails && (
+              <span style={{ fontSize: 11, color: '#64748B' }}>({fileDetails.size})</span>
+            )}
           </div>
-        ) : (
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer', textAlign: 'center', width: '100%', padding: '12px 0' }}
-          >
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1B2B68' }}>
-              <UploadCloud size={24} />
-            </div>
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Click to browse or drag & drop image
-              </p>
-              <p style={{ fontSize: 11, color: '#64748B', margin: '2px 0 0' }}>
-                PNG, JPG, WebP, SVG • Standard {recommendedRatio}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+          <span style={{ fontSize: 12, color: '#64748B' }}>
+            PNG, JPG, WebP • Click or drag file here
+          </span>
+        </div>
+      </label>
     </div>
   );
 }
 
-/* — App Screens & Branding Manager Component — */
+/* — APP SCREENS & BRANDING MANAGER (CLEAN, NO UNNECESSARY TEXT, PROPER SPACING) — */
 function AppBrandingManager() {
-  const [logoUrl, setLogoUrl] = useState('/logo.png');
   const [onboardingImage, setOnboardingImage] = useState('/logo.png');
-  const [splashLogo, setSplashLogo] = useState('/logo.png');
-  const [splashBg, setSplashBg] = useState('#1B2B68');
-  const [splashText, setSplashText] = useState('Home2School');
   const [onboardingTitle, setOnboardingTitle] = useState('Welcome to Home2School');
   const [onboardingSubtitle, setOnboardingSubtitle] = useState('Safe school rides & certified walking escorts for students, trusted by verified neighbourhood families.');
+  
+  const [splashImage, setSplashImage] = useState('/logo.png');
+  const [splashBg, setSplashBg] = useState('#1B2B68');
+  const [splashText, setSplashText] = useState('Home2School');
+
+  const [logoImage, setLogoImage] = useState('/logo.png');
   const [activeScreenTab, setActiveScreenTab] = useState<'onboarding' | 'splash' | 'logo'>('onboarding');
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
     setSaved(true);
-    setTimeout(() => setSaved(false), 2400);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Top Action Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: 14 }}>
-        <div>
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-            Mobile App Screens & Brand Assets
-          </h2>
-          <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
-            Direct image upload with standard mobile viewports (430 × 932 px) and live smartphone mockup preview.
-          </p>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+        <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+          Mobile App Screens & Brand Assets
+        </h2>
 
         <button
+          type="button"
           onClick={handleSave}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            height: 38,
+            height: 36,
             padding: '0 18px',
             borderRadius: 8,
             border: 'none',
@@ -1500,82 +1245,60 @@ function AppBrandingManager() {
             fontSize: 13,
             fontWeight: 700,
             cursor: 'pointer',
-            boxShadow: '0 2px 4px rgba(27, 43, 104, 0.15)',
+            boxShadow: '0 1px 3px rgba(27, 43, 104, 0.2)',
           }}
         >
           {saved ? <Check size={16} /> : <Upload size={16} />}
-          <span>{saved ? 'Changes Saved!' : 'Save Brand Assets'}</span>
+          <span>{saved ? 'Saved!' : 'Save Brand Assets'}</span>
         </button>
       </div>
 
       {/* Screen Selector Tabs */}
-      <div style={{ display: 'flex', gap: 6, background: '#F1F5F9', padding: 4, borderRadius: 10, width: 'fit-content' }}>
-        <button
-          onClick={() => setActiveScreenTab('onboarding')}
-          style={{
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: 8,
-            fontSize: 13,
-            fontWeight: 700,
-            cursor: 'pointer',
-            background: activeScreenTab === 'onboarding' ? '#FFFFFF' : 'transparent',
-            color: activeScreenTab === 'onboarding' ? '#1B2B68' : '#64748B',
-            boxShadow: activeScreenTab === 'onboarding' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-          }}
-        >
-          Onboarding Screen
-        </button>
-        <button
-          onClick={() => setActiveScreenTab('splash')}
-          style={{
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: 8,
-            fontSize: 13,
-            fontWeight: 700,
-            cursor: 'pointer',
-            background: activeScreenTab === 'splash' ? '#FFFFFF' : 'transparent',
-            color: activeScreenTab === 'splash' ? '#1B2B68' : '#64748B',
-            boxShadow: activeScreenTab === 'splash' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-          }}
-        >
-          Splash Loading Screen
-        </button>
-        <button
-          onClick={() => setActiveScreenTab('logo')}
-          style={{
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: 8,
-            fontSize: 13,
-            fontWeight: 700,
-            cursor: 'pointer',
-            background: activeScreenTab === 'logo' ? '#FFFFFF' : 'transparent',
-            color: activeScreenTab === 'logo' ? '#1B2B68' : '#64748B',
-            boxShadow: activeScreenTab === 'logo' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-          }}
-        >
-          App Emblem Logo
-        </button>
+      <div style={{ padding: '16px 24px 0', background: '#FFFFFF' }}>
+        <div style={{ display: 'flex', gap: 6, background: '#F1F5F9', padding: 4, borderRadius: 10, width: 'fit-content' }}>
+          {(['onboarding', 'splash', 'logo'] as const).map(tab => {
+            const isSelected = activeScreenTab === tab;
+            const label = tab === 'onboarding' ? 'Onboarding Screen' : tab === 'splash' ? 'Splash Loading Screen' : 'App Emblem Logo';
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveScreenTab(tab)}
+                style={{
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  background: isSelected ? '#FFFFFF' : 'transparent',
+                  color: isSelected ? '#1B2B68' : '#64748B',
+                  boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Editor & Smartphone Mockup Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) 340px', gap: 24, alignItems: 'start' }}>
+      {/* Main Form & Phone Preview Grid */}
+      <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) 320px', gap: 28, alignItems: 'start' }}>
         {/* Left Form Controls */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           {activeScreenTab === 'onboarding' && (
             <>
-              <ImageUploadDropzone
-                label="Onboarding Hero Artwork / Mobile Screen"
-                recommendedRatio="430 × 932 px (19.5:9 Mobile Ratio)"
-                standardType="Mobile Viewport"
+              <SimpleImageUpload
+                label="Onboarding Screen Artwork"
+                recommendedRatio="430 × 932 px"
                 currentImage={onboardingImage}
                 onImageChange={setOnboardingImage}
               />
 
               <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 6 }}>
                   Main Welcome Headline
                 </label>
                 <input
@@ -1586,8 +1309,8 @@ function AppBrandingManager() {
               </div>
 
               <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
-                  Tagline / Description Text
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 6 }}>
+                  Tagline / Description
                 </label>
                 <textarea
                   rows={3}
@@ -1596,28 +1319,33 @@ function AppBrandingManager() {
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 13, fontWeight: 500, color: '#0F172A', outline: 'none', boxSizing: 'border-box', resize: 'vertical' }}
                 />
               </div>
-
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px', fontSize: 12, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <strong style={{ color: '#0F172A' }}>Standard Mobile Ratio Specifications:</strong>
-                <span>• Designed for standard smartphone resolutions: 430 × 932 px (19.5:9 aspect ratio).</span>
-                <span>• High-DPI screens automatically scale gracefully without cropping text or action buttons.</span>
-              </div>
             </>
           )}
 
           {activeScreenTab === 'splash' && (
             <>
-              <ImageUploadDropzone
-                label="Splash Screen Center Emblem / Artwork"
-                recommendedRatio="430 × 932 px (Full Splash) or 512 × 512 px (Emblem)"
-                standardType="Splash Screen"
-                currentImage={splashLogo}
-                onImageChange={setSplashLogo}
+              <SimpleImageUpload
+                label="Splash Screen Image"
+                recommendedRatio="430 × 932 px"
+                currentImage={splashImage}
+                onImageChange={setSplashImage}
               />
 
               <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
-                  Splash Background Brand Color
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 6 }}>
+                  Splash Brand Wordmark
+                </label>
+                <input
+                  value={splashText}
+                  onChange={e => setSplashText(e.target.value)}
+                  placeholder="e.g. Home2School"
+                  style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontWeight: 600, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 6 }}>
+                  Background Accent Color
                 </label>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                   <input
@@ -1633,62 +1361,34 @@ function AppBrandingManager() {
                   />
                 </div>
               </div>
-
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
-                  Splash Brand Wordmark
-                </label>
-                <input
-                  value={splashText}
-                  onChange={e => setSplashText(e.target.value)}
-                  style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontWeight: 600, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px', fontSize: 12, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <strong style={{ color: '#0F172A' }}>Splash Screen Guidelines:</strong>
-                <span>• Center emblem is centered with brand wordmark against the primary brand tone.</span>
-                <span>• Fits modern mobile screen ratios (19.5:9, 18:9, 16:9).</span>
-              </div>
             </>
           )}
 
           {activeScreenTab === 'logo' && (
             <>
-              <ImageUploadDropzone
-                label="Official App Emblem / Master Icon"
-                recommendedRatio="512 × 512 px (1:1 Standard Square)"
-                standardType="App Emblem"
-                currentImage={logoUrl}
-                onImageChange={setLogoUrl}
+              <SimpleImageUpload
+                label="App Emblem Logo"
+                recommendedRatio="512 × 512 px (1:1 Square)"
+                currentImage={logoImage}
+                onImageChange={setLogoImage}
               />
-
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '14px', fontSize: 12, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <strong style={{ color: '#0F172A' }}>Emblem Logo Asset Guidelines:</strong>
-                <span>• Ratio: Exact 1:1 square ratio (Minimum 512 × 512 px recommended, 1024 × 1024 px for Retina).</span>
-                <span>• Format: PNG with alpha transparency or SVG vector.</span>
-                <span>• Synchronized across: Mobile App Icon, Dashboard Topbar, and Parents Email Notifications.</span>
-              </div>
             </>
           )}
         </div>
 
         {/* Right Smartphone Frame Live Mockup */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Smartphone size={14} color="#64748B" />
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Standard Phone Preview (430 × 932 px)
-            </span>
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Live Phone Preview
+          </span>
 
           <div
             style={{
-              width: 310,
-              height: 610,
+              width: 290,
+              height: 580,
               borderRadius: 36,
               border: '10px solid #0F172A',
-              boxShadow: '0 20px 35px rgba(0,0,0,0.18)',
+              boxShadow: '0 16px 30px rgba(0,0,0,0.15)',
               overflow: 'hidden',
               background: activeScreenTab === 'splash' ? splashBg : '#F8FAFC',
               display: 'flex',
@@ -1697,47 +1397,30 @@ function AppBrandingManager() {
               transition: 'background 0.2s ease',
             }}
           >
-            {/* Speaker Notch */}
-            <div style={{ width: 100, height: 16, background: '#0F172A', borderRadius: '0 0 12px 12px', margin: '0 auto', position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }} />
+            {/* Notch */}
+            <div style={{ width: 90, height: 14, background: '#0F172A', borderRadius: '0 0 10px 10px', margin: '0 auto', position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }} />
 
             {activeScreenTab === 'splash' ? (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: '#FFFFFF', padding: 24, textAlign: 'center' }}>
-                <div style={{ width: 110, height: 110, borderRadius: 24, background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12, border: '1px solid rgba(255,255,255,0.2)' }}>
-                  <img src={splashLogo} alt="Splash Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, color: '#FFFFFF', padding: 20, textAlign: 'center' }}>
+                <div style={{ width: 100, height: 100, borderRadius: 20, background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10, border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <img src={splashImage} alt="Splash Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
-                <h3 style={{ fontSize: 24, fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
                   {splashText}
                 </h3>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Safe School Rides & Walking Escorts</span>
               </div>
             ) : activeScreenTab === 'logo' ? (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 18px 24px', justifyContent: 'space-between', background: '#F8FAFC' }}>
-                <div style={{ textAlign: 'center', marginTop: 30 }}>
-                  <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 28, background: '#FFFFFF', boxShadow: '0 10px 25px rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18, border: '1px solid #E2E8F0' }}>
-                    <img src={logoUrl} alt="App Icon Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 16px 20px', justifyContent: 'space-between', background: '#F8FAFC' }}>
+                <div style={{ textAlign: 'center', marginTop: 40 }}>
+                  <div style={{ width: 110, height: 110, margin: '0 auto', borderRadius: 24, background: '#FFFFFF', boxShadow: '0 8px 20px rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, border: '1px solid #E2E8F0' }}>
+                    <img src={logoImage} alt="Logo Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
-                  <h4 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', marginTop: 16, marginBottom: 4 }}>
+                  <h4 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', marginTop: 14, marginBottom: 2 }}>
                     Home2School
                   </h4>
-                  <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
-                    Official Master App Icon (1:1 Square)
+                  <p style={{ fontSize: 11, color: '#64748B', margin: 0 }}>
+                    App Icon (512 × 512 px)
                   </p>
-                </div>
-
-                <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Preview Locations:</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#334155' }}>
-                    <div style={{ width: 24, height: 24, borderRadius: 6, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <img src={logoUrl} alt="Nav" style={{ width: 16, height: 16, objectFit: 'contain' }} />
-                    </div>
-                    <span>Topbar App Emblem</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#334155' }}>
-                    <div style={{ width: 24, height: 24, borderRadius: 6, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <img src={logoUrl} alt="Push" style={{ width: 16, height: 16, objectFit: 'contain' }} />
-                    </div>
-                    <span>Push Notification Avatar</span>
-                  </div>
                 </div>
 
                 <div style={{ background: '#1B2B68', color: '#FFFFFF', padding: '10px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
@@ -1745,25 +1428,25 @@ function AppBrandingManager() {
                 </div>
               </div>
             ) : (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 18px 24px', justifyContent: 'space-between' }}>
-                <div style={{ width: '100%', height: 240, borderRadius: 16, background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: 12 }}>
-                  <img src={onboardingImage} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '34px 16px 20px', justifyContent: 'space-between' }}>
+                <div style={{ width: '100%', height: 220, borderRadius: 14, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: 10 }}>
+                  <img src={onboardingImage} alt="Onboarding Artwork" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
 
-                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <h4 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <h4 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
                     {onboardingTitle}
                   </h4>
-                  <p style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5, margin: 0 }}>
+                  <p style={{ fontSize: 11, color: '#64748B', lineHeight: 1.4, margin: 0 }}>
                     {onboardingSubtitle}
                   </p>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ background: '#1B2B68', color: '#FFFFFF', padding: '10px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ background: '#1B2B68', color: '#FFFFFF', padding: '9px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
                     Sign up for free
                   </div>
-                  <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', color: '#1B2B68', padding: '9px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+                  <div style={{ background: '#FFFFFF', border: '1px solid #CBD5E1', color: '#1B2B68', padding: '8px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
                     Sign in
                   </div>
                 </div>
@@ -1775,6 +1458,7 @@ function AppBrandingManager() {
     </div>
   );
 }
+
 
 export default function CMSPage() {
   const [activeTab, setActiveTab] = useState<'faq' | 'tos' | 'privacy' | 'about' | 'emergency' | 'branding'>('about');
