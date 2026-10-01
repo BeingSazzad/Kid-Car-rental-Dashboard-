@@ -4,8 +4,6 @@ import { Gift, Copy, Check, Link2, X, Download, Users } from 'lucide-react';
 interface ReferralConfig {
   active: boolean;
   bonusAmount: number;
-  rewardType: string;
-  expiryDays: number;
   title: string;
   description: string;
 }
@@ -13,8 +11,6 @@ interface ReferralConfig {
 const DEFAULT_CONFIG: ReferralConfig = {
   active: true,
   bonusAmount: 15,
-  rewardType: 'Wallet credit',
-  expiryDays: 90,
   title: 'Invite friends & earn ${amount}',
   description: 'Get ${amount} credit when an invited family completes their first commute.',
 };
@@ -252,10 +248,10 @@ export default function ReferralsPage() {
               </div>
 
               {/* Inputs Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+              <div style={{ maxWidth: 320, marginBottom: 16 }}>
                 <div>
                   <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                    Bonus amount
+                    Bonus amount ($ CAD)
                   </label>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <span style={{ position: 'absolute', left: 12, fontSize: 14, fontWeight: 700, color: '#475569' }}>$</span>
@@ -278,59 +274,6 @@ export default function ReferralsPage() {
                       }}
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                    Reward type
-                  </label>
-                  <select
-                    value={cfg.rewardType}
-                    onChange={e => setCfg({ ...cfg, rewardType: e.target.value })}
-                    style={{
-                      width: '100%',
-                      height: 38,
-                      borderRadius: 8,
-                      border: '1px solid #CBD5E1',
-                      padding: '0 12px',
-                      fontSize: 14,
-                      fontWeight: 500,
-                      color: '#0F172A',
-                      outline: 'none',
-                      background: '#FFFFFF',
-                      boxSizing: 'border-box',
-                    }}
-                  >
-                    <option value="Wallet credit">Wallet credit</option>
-                    <option value="Trip discount">Trip discount</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ maxWidth: '50%' }}>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                  Credit expires after
-                </label>
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="number"
-                    value={cfg.expiryDays}
-                    onChange={e => setCfg({ ...cfg, expiryDays: Number(e.target.value) })}
-                    style={{
-                      width: '100%',
-                      height: 38,
-                      borderRadius: 8,
-                      border: '1px solid #CBD5E1',
-                      paddingLeft: 12,
-                      paddingRight: 48,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: '#0F172A',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                    }}
-                  />
-                  <span style={{ position: 'absolute', right: 12, fontSize: 12, fontWeight: 600, color: '#94A3B8' }}>days</span>
                 </div>
               </div>
             </div>

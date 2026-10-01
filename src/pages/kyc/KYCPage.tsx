@@ -99,41 +99,31 @@ export default function KYCPage() {
   const [candidates, setCandidates] = useState<KYCCandidate[]>(CANDIDATES);
   const [selectedId, setSelectedId] = useState<string>('KYC-001');
   const [search, setSearch] = useState('');
-  const [statusTab, setStatusTab] = useState<'All' | 'Ready' | 'Action needed' | 'Approved'>('All');
-  const [roleFilter, setRoleFilter] = useState<'All' | 'Driver' | 'Walker'>('All');
+  const [statusTab, setStatusTab] = useState<'All' | 'Ready' | 'Action needed'>('All');
   const [inspectDoc, setInspectDoc] = useState<KYCDoc | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   // Filter candidates list
   const filteredCandidates = useMemo(() => {
     return candidates.filter(c => {
-      // Status tab
       let matchStatus = true;
       if (statusTab === 'Ready') matchStatus = c.status === 'Ready for review';
       else if (statusTab === 'Action needed') matchStatus = c.status === 'Missing document' || c.status === 'Expired document';
-      else if (statusTab === 'Approved') matchStatus = c.status === 'Approved';
 
-      // Role filter
-      let matchRole = true;
-      if (roleFilter !== 'All') matchRole = c.role === roleFilter;
-
-      // Search
       const q = search.trim().toLowerCase();
       let matchSearch = true;
       if (q) {
-        matchSearch = c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q);
+        matchSearch = c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q) || c.role.toLowerCase().includes(q);
       }
 
-      return matchStatus && matchRole && matchSearch;
+      return matchStatus && matchSearch;
     });
-  }, [candidates, statusTab, roleFilter, search]);
+  }, [candidates, statusTab, search]);
 
   const activeCandidate = candidates.find(c => c.id === selectedId) || candidates[0];
 
   const readyCount = candidates.filter(c => c.status === 'Ready for review').length;
   const actionCount = candidates.filter(c => c.status === 'Missing document' || c.status === 'Expired document').length;
-  const approvedCount = candidates.filter(c => c.status === 'Approved').length;
-
   // Handle Approve action (1-word button)
   const handleApprove = () => {
     if (!activeCandidate) return;
@@ -278,119 +268,50 @@ Audit Status: Verified by SafeRide Admin Engine
             />
           </div>
 
-          {/* Status Tabs */}
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <button
-              onClick={() => setStatusTab('All')}
-              style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                background: statusTab === 'All' ? '#1B2B68' : '#F0F3FA',
-                color: statusTab === 'All' ? '#FFFFFF' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span>All</span>
-              <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 99, background: statusTab === 'All' ? 'rgba(255,255,255,0.2)' : '#E2E8F0', color: statusTab === 'All' ? '#FFFFFF' : '#475569' }}>
-                {candidates.length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setStatusTab('Ready')}
-              style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                background: statusTab === 'Ready' ? '#1B2B68' : '#F0F3FA',
-                color: statusTab === 'Ready' ? '#FFFFFF' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span>Ready</span>
-              <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 99, background: statusTab === 'Ready' ? 'rgba(255,255,255,0.2)' : '#E2E8F0', color: statusTab === 'Ready' ? '#FFFFFF' : '#475569' }}>
-                {readyCount}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setStatusTab('Action needed')}
-              style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                background: statusTab === 'Action needed' ? '#1B2B68' : '#F0F3FA',
-                color: statusTab === 'Action needed' ? '#FFFFFF' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span>Action</span>
-              <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 99, background: statusTab === 'Action needed' ? 'rgba(255,255,255,0.2)' : '#E2E8F0', color: statusTab === 'Action needed' ? '#FFFFFF' : '#475569' }}>
-                {actionCount}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setStatusTab('Approved')}
-              style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                background: statusTab === 'Approved' ? '#1B2B68' : '#F0F3FA',
-                color: statusTab === 'Approved' ? '#FFFFFF' : '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span>Approved</span>
-              <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 99, background: statusTab === 'Approved' ? 'rgba(255,255,255,0.2)' : '#E2E8F0', color: statusTab === 'Approved' ? '#FFFFFF' : '#475569' }}>
-                {approvedCount}
-              </span>
-            </button>
-          </div>
-
-          {/* Role Filter Pills */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', marginRight: 4 }}>Role:</span>
-            {(['All', 'Driver', 'Walker'] as const).map(role => (
-              <button
-                key={role}
-                onClick={() => setRoleFilter(role)}
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  padding: '4px 10px',
-                  borderRadius: 6,
-                  border: '1px solid',
-                  borderColor: roleFilter === role ? '#1B2B68' : '#E2E8F0',
-                  background: roleFilter === role ? '#EEF1FB' : '#FFFFFF',
-                  color: roleFilter === role ? '#1B2B68' : '#64748B',
-                  cursor: 'pointer',
-                }}
-              >
-                {role}
-              </button>
-            ))}
+          {/* Minimal Status Tabs - Single Clean Row */}
+          <div style={{ display: 'flex', background: '#F1F5F9', padding: 3, borderRadius: 8, gap: 4 }}>
+            {(['All', 'Ready', 'Action needed'] as const).map(tab => {
+              const active = statusTab === tab;
+              const count = tab === 'All' ? candidates.length : tab === 'Ready' ? readyCount : actionCount;
+              const label = tab === 'All' ? 'All' : tab === 'Ready' ? 'Ready' : 'Action needed';
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setStatusTab(tab)}
+                  style={{
+                    flex: 1,
+                    border: 'none',
+                    padding: '6px 8px',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    fontWeight: active ? 700 : 600,
+                    cursor: 'pointer',
+                    background: active ? '#1B2B68' : 'transparent',
+                    color: active ? '#FFFFFF' : '#64748B',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span>{label}</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      padding: '1px 5px',
+                      borderRadius: 99,
+                      background: active ? 'rgba(255,255,255,0.2)' : '#E2E8F0',
+                      color: active ? '#FFFFFF' : '#64748B',
+                    }}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Candidates List Container */}

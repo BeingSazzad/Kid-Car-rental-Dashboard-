@@ -168,22 +168,22 @@ const INITIAL_TICKETS: Ticket[] = [
 ];
 
 const priorityConfig = {
-  High: { bg: '#FEE2E2', color: '#991B1B', border: '#FECACA' },
-  Medium: { bg: '#FEF3C7', color: '#92400E', border: '#FDE68A' },
-  Low: { bg: '#F1F5F9', color: '#475569', border: '#E2E8F0' },
+  High: { bg: '#FEF2F2', color: '#DC2626', border: '#FECACA' },
+  Medium: { bg: '#F8FAFC', color: '#64748B', border: '#E2E8F0' },
+  Low: { bg: '#F8FAFC', color: '#94A3B8', border: '#E2E8F0' },
 };
 
 const statusConfig = {
-  Open: { bg: '#FEE2E2', color: '#991B1B', dot: '#EF4444' },
-  'In Progress': { bg: '#FEF3C7', color: '#92400E', dot: '#F59E0B' },
-  Resolved: { bg: '#D1FAE5', color: '#065F46', dot: '#10B981' },
+  Open: { bg: '#FEF2F2', color: '#DC2626', dot: '#EF4444' },
+  'In Progress': { bg: '#FFFBEB', color: '#B45309', dot: '#F59E0B' },
+  Resolved: { bg: '#ECFDF5', color: '#059669', dot: '#10B981' },
 };
 
 const categoryBadge = {
-  Safety: { bg: '#FEE2E2', color: '#B91C1C' },
-  'Trip Issue': { bg: '#EEF1FB', color: '#1B2B68' },
-  Payment: { bg: '#FFF0E8', color: '#F2600C' },
-  Account: { bg: '#F3E8FF', color: '#7E22CE' },
+  Safety: { bg: '#F1F5F9', color: '#334155' },
+  'Trip Issue': { bg: '#F1F5F9', color: '#334155' },
+  Payment: { bg: '#F1F5F9', color: '#334155' },
+  Account: { bg: '#F1F5F9', color: '#334155' },
 };
 
 export default function SupportPage() {
@@ -302,16 +302,16 @@ export default function SupportPage() {
         </div>
 
         {/* Open (Urgent) */}
-        <div style={{ background: '#fff', border: '1.5px solid #FEE2E2', borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <AlertCircle size={22} style={{ color: '#EF4444' }} />
+        <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <AlertCircle size={22} style={{ color: '#DC2626' }} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Open & Action Req.</p>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444' }} />
+              <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Open & Action Req.</p>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#DC2626' }} />
             </div>
-            <p style={{ fontSize: 24, fontWeight: 800, color: '#991B1B', lineHeight: 1.2 }}>{openCount}</p>
+            <p style={{ fontSize: 24, fontWeight: 800, color: '#1A1D24', lineHeight: 1.2 }}>{openCount}</p>
           </div>
         </div>
 
@@ -322,7 +322,7 @@ export default function SupportPage() {
           </div>
           <div>
             <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>In Progress</p>
-            <p style={{ fontSize: 24, fontWeight: 800, color: '#92400E', lineHeight: 1.2 }}>{inProgressCount}</p>
+            <p style={{ fontSize: 24, fontWeight: 800, color: '#1A1D24', lineHeight: 1.2 }}>{inProgressCount}</p>
           </div>
         </div>
 
@@ -333,7 +333,7 @@ export default function SupportPage() {
           </div>
           <div>
             <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Resolved</p>
-            <p style={{ fontSize: 24, fontWeight: 800, color: '#065F46', lineHeight: 1.2 }}>{resolvedCount}</p>
+            <p style={{ fontSize: 24, fontWeight: 800, color: '#1A1D24', lineHeight: 1.2 }}>{resolvedCount}</p>
           </div>
         </div>
       </div>
@@ -559,8 +559,8 @@ export default function SupportPage() {
                             width: 32,
                             height: 32,
                             borderRadius: '50%',
-                            background: t.role === 'Driver' ? '#FFF0E8' : '#EEF1FB',
-                            color: t.role === 'Driver' ? '#F2600C' : '#1B2B68',
+                            background: '#EEF2FF',
+                            color: '#1B2B68',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -577,7 +577,7 @@ export default function SupportPage() {
                             style={{
                               fontSize: 12,
                               fontWeight: 600,
-                              color: t.role === 'Driver' ? '#F2600C' : '#1B2B68',
+                              color: '#64748B',
                             }}
                           >
                             {t.role}

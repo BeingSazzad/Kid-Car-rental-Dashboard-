@@ -168,7 +168,7 @@ function PolicyClauseManager({
 
   const handleSaveModal = () => {
     if (!clauseTitle.trim()) {
-      setClauseError('Please enter a clause title.');
+      setClauseError('Please enter a section title.');
       return;
     }
     if (modalMode === 'create') {
@@ -198,7 +198,7 @@ function PolicyClauseManager({
   };
 
   const deleteClause = (id: string) => {
-    if (confirm('Are you sure you want to delete this clause?')) {
+    if (confirm('Are you sure you want to delete this section?')) {
       const updated = renumber(data.clauses.filter(c => c.id !== id));
       const updatedData = { ...data, clauses: updated };
       setData(updatedData);
@@ -257,14 +257,14 @@ function PolicyClauseManager({
             fontSize: 12, fontWeight: 700, background: '#EEF2F9',
             color: '#1B2B68', padding: '3px 9px', borderRadius: 6,
           }}>
-            {data.clauses.length} Clauses
+            {data.clauses.length} Sections
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <SaveIndicator show={saved} />
 
-          {/* Add Clause Button */}
+          {/* Add Section Button */}
           <button
             type="button"
             onClick={openAddModal}
@@ -356,7 +356,7 @@ function PolicyClauseManager({
                         type="button"
                         onClick={() => duplicateClause(clause)}
                         style={iconBtnStyle}
-                        title="Duplicate Clause"
+                        title="Duplicate Section"
                       >
                         <Copy size={13} />
                       </button>
@@ -374,7 +374,7 @@ function PolicyClauseManager({
                           fontWeight: 700,
                           fontSize: 12,
                         }}
-                        title="Edit Clause"
+                        title="Edit Section"
                       >
                         <Edit2 size={12} /> Edit
                       </button>
@@ -382,7 +382,7 @@ function PolicyClauseManager({
                         type="button"
                         onClick={() => deleteClause(clause.id)}
                         style={{ ...iconBtnStyle, color: '#EF4444', background: '#FFF5F5', border: '1px solid #FEE2E2' }}
-                        title="Delete Clause"
+                        title="Delete Section"
                       >
                         <Trash2 size={13} />
                       </button>
@@ -406,7 +406,7 @@ function PolicyClauseManager({
               ))}
             </div>
 
-            {/* Add Clause Button at bottom */}
+            {/* Add Section Button at bottom */}
             <button
               type="button"
               onClick={openAddModal}
@@ -490,7 +490,7 @@ function PolicyClauseManager({
                   {modalMode === 'create' ? <Plus size={18} /> : <Edit2 size={16} />}
                 </div>
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                  {modalMode === 'create' ? 'Add Clause' : 'Edit Clause'}
+                  {modalMode === 'create' ? 'Add Section' : 'Edit Section'}
                 </h3>
               </div>
 
@@ -523,7 +523,7 @@ function PolicyClauseManager({
               )}
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>
-                  Clause Title
+                  Section Title
                 </label>
                 <input
                   value={clauseTitle}
@@ -547,12 +547,12 @@ function PolicyClauseManager({
 
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>
-                  Clause Content
+                  Section Content
                 </label>
                 <RichTextEditor
                   value={clauseContent}
                   onChange={setClauseContent}
-                  placeholder="Write clause description and bullet points..."
+                  placeholder="Write section description and bullet points..."
                   minHeight={180}
                 />
               </div>
@@ -607,7 +607,7 @@ function PolicyClauseManager({
                 }}
               >
                 <Check size={15} />
-                {modalMode === 'create' ? 'Add Clause' : 'Save Changes'}
+                {modalMode === 'create' ? 'Add Section' : 'Save Changes'}
               </button>
             </div>
           </div>

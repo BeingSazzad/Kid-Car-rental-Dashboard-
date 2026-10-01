@@ -1,28 +1,49 @@
 import { useState } from 'react';
 import { User, Bell, Shield, Plus, Trash2, X, Check, Mail, Send, CheckCircle2 } from 'lucide-react';
 
+export type AdminRole = 'Super Admin' | 'Admin';
+
 interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: string;
-  last: string;
-  status?: 'Active' | 'Pending';
+  role: AdminRole;
+  joinedDate: string;
+  lastActive: string;
+  status: 'Active' | 'Pending';
 }
 
 const INITIAL_TEAM: TeamMember[] = [
-  { id: '1', name: 'Super Admin', email: 'admin@home2school.ca', role: 'Super Admin', last: '2 min ago', status: 'Active' },
-  { id: '2', name: 'Jane Cooper', email: 'jane@home2school.ca', role: 'Trust & Safety', last: '1 hour ago', status: 'Active' },
-  { id: '3', name: 'Robert Fox', email: 'robert@home2school.ca', role: 'Finance', last: 'Yesterday', status: 'Active' },
+  {
+    id: '1',
+    name: 'Super Admin',
+    email: 'admin@home2school.ca',
+    role: 'Super Admin',
+    joinedDate: 'Aug 1, 2026',
+    lastActive: 'Active now',
+    status: 'Active',
+  },
+  {
+    id: '2',
+    name: 'Jane Cooper',
+    email: 'jane@home2school.ca',
+    role: 'Admin',
+    joinedDate: 'Sep 10, 2026',
+    lastActive: '1 hour ago',
+    status: 'Active',
+  },
+  {
+    id: '3',
+    name: 'Robert Fox',
+    email: 'robert@home2school.ca',
+    role: 'Admin',
+    joinedDate: 'Sep 22, 2026',
+    lastActive: 'Yesterday',
+    status: 'Active',
+  },
 ];
 
-const ROLES = [
-  'Super Admin',
-  'Trust & Safety',
-  'Support Specialist',
-  'Finance & Operations',
-  'Content Editor',
-];
+const ROLES: AdminRole[] = ['Admin', 'Super Admin'];
 
 const TABS = [
   { key: 'profile', label: 'Admin Profile', icon: User },
@@ -39,7 +60,7 @@ export default function SettingsPage() {
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteName, setInviteName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState('Trust & Safety');
+  const [inviteRole, setInviteRole] = useState<AdminRole>('Admin');
   const [successToast, setSuccessToast] = useState('');
 
   // Profile Form state
@@ -64,7 +85,7 @@ export default function SettingsPage() {
     setInviteError(null);
     setInviteName('');
     setInviteEmail('');
-    setInviteRole('Trust & Safety');
+    setInviteRole('Admin');
     setInviteModalOpen(true);
   };
 
@@ -80,7 +101,8 @@ export default function SettingsPage() {
       name: inviteName.trim(),
       email: inviteEmail.trim(),
       role: inviteRole,
-      last: 'Invited just now',
+      joinedDate: 'Oct 1, 2026',
+      lastActive: 'Invited just now',
       status: 'Pending',
     };
 
@@ -288,30 +310,45 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* ── TAB 2: Team (WITH INTERACTIVE INVITE MODAL) ── */}
+      {/* ── TAB 2: Team Members (Structured Table with Columns & Strict Roles) ── */}
       {tab === 'team' && (
         <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          {/* Card Header */}
           <div
             style={{
-              padding: '18px 24px',
-              borderBottom: '1px solid #F1F5F9',
+              padding: '20px 24px',
+              borderBottom: '1px solid #E2E8F0',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              background: '#F8FAFC',
+              background: '#FFFFFF',
             }}
           >
             <div>
-              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
-                Admin Team Members
-              </h2>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                Colleagues with permission to review trips, process refunds, and verify drivers
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
+                  Admin Team Members
+                </h2>
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: 12,
+                    background: '#EEF2FF',
+                    color: '#1B2B68',
+                  }}
+                >
+                  {team.length} Admins
+                </span>
+              </div>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
+                Colleagues with platform administration access (Super Admin & Admin roles only)
               </p>
             </div>
 
-            {/* + Invite Admin Button */}
             <button
+              type="button"
               onClick={openInviteModal}
               style={{
                 display: 'flex',
@@ -319,113 +356,163 @@ export default function SettingsPage() {
                 gap: 6,
                 height: 38,
                 padding: '0 16px',
-                borderRadius: 9,
+                borderRadius: 8,
                 border: 'none',
                 background: '#1B2B68',
                 color: '#fff',
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: 700,
-                fontFamily: 'Manrope',
+                fontFamily: 'Manrope, sans-serif',
                 cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(27, 43, 104, 0.2)',
+                boxShadow: '0 1px 2px rgba(27, 43, 104, 0.15)',
               }}
             >
-              <Plus size={15} />Invite</button>
+              <Plus size={15} />
+              <span>Invite Admin</span>
+            </button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {team.map((m, i) => (
-              <div
-                key={m.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '16px 24px',
-                  borderBottom: i < team.length - 1 ? '1px solid #F8FAFC' : 'none',
-                  transition: 'background 0.15s ease',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#FAFCFF')}
-                onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
-              >
-                {/* Initials Avatar */}
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    background: m.role === 'Super Admin' ? '#1B2B68' : '#EEF1FB',
-                    color: m.role === 'Super Admin' ? '#ffffff' : '#1B2B68',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: 14,
-                    flexShrink: 0,
-                    fontSize: 14,
-                    fontWeight: 800,
-                  }}
-                >
-                  {m.name.split(' ').map(n => n[0]).join('')}
-                </div>
-
-                {/* Name & Email */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24', margin: 0 }}>
-                      {m.name}
-                    </p>
-                    {m.status === 'Pending' && (
-                      <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: '#FEF3C7', color: '#92400E' }}>
-                        Invite Pending
-                      </span>
-                    )}
-                  </div>
-                  <p style={{ fontSize: 12, fontWeight: 500, color: '#64748B', margin: '2px 0 0' }}>
-                    {m.email} · <span style={{ color: '#94A3B8' }}>{m.last}</span>
-                  </p>
-                </div>
-
-                {/* Role Badge */}
-                <span
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 700,
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    background: m.role === 'Super Admin' ? '#1B2B68' : '#EEF1FB',
-                    color: m.role === 'Super Admin' ? '#FFFFFF' : '#1B2B68',
-                    marginRight: 14,
-                  }}
-                >
-                  {m.role}
-                </span>
-
-                {/* Remove button (disabled for primary super admin) */}
-                {m.role !== 'Super Admin' ? (
-                  <button
-                    onClick={() => handleRemoveMember(m.id, m.name)}
+          {/* Structured Table */}
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+                  <th style={{ padding: '12px 24px', fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Admin Member</th>
+                  <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Role</th>
+                  <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Admin Since</th>
+                  <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Last Active</th>
+                  <th style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Status</th>
+                  <th style={{ padding: '12px 24px', fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {team.map((m, i) => (
+                  <tr
+                    key={m.id}
                     style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 8,
-                      border: '1px solid #FEE2E2',
-                      background: '#FFF5F5',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.15s ease',
+                      borderBottom: i < team.length - 1 ? '1px solid #F1F5F9' : 'none',
+                      background: '#FFFFFF',
+                      transition: 'background 0.15s ease',
                     }}
-                    title="Remove Admin Access"
-                    onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#FFF5F5')}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
                   >
-                    <Trash2 size={13} style={{ color: '#EF4444' }} />
-                  </button>
-                ) : (
-                  <div style={{ width: 32 }} />
-                )}
-              </div>
-            ))}
+                    {/* Admin Member */}
+                    <td style={{ padding: '14px 24px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div
+                          style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: '50%',
+                            background: m.role === 'Super Admin' ? '#1B2B68' : '#EEF2FF',
+                            color: m.role === 'Super Admin' ? '#FFFFFF' : '#1B2B68',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                            fontSize: 12,
+                            fontWeight: 800,
+                          }}
+                        >
+                          {m.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24', margin: 0 }}>
+                            {m.name}
+                          </p>
+                          <p style={{ fontSize: 12, fontWeight: 500, color: '#64748B', margin: '2px 0 0' }}>
+                            {m.email}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Role */}
+                    <td style={{ padding: '14px 18px' }}>
+                      <span
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 700,
+                          padding: '3px 10px',
+                          borderRadius: 6,
+                          background: m.role === 'Super Admin' ? '#1B2B68' : '#EEF2FF',
+                          color: m.role === 'Super Admin' ? '#FFFFFF' : '#1B2B68',
+                          border: m.role === 'Super Admin' ? 'none' : '1px solid #E0E7FF',
+                          display: 'inline-block',
+                        }}
+                      >
+                        {m.role}
+                      </span>
+                    </td>
+
+                    {/* Admin Since */}
+                    <td style={{ padding: '14px 18px' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>
+                        {m.joinedDate}
+                      </span>
+                    </td>
+
+                    {/* Last Active */}
+                    <td style={{ padding: '14px 18px' }}>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B' }}>
+                        {m.lastActive}
+                      </span>
+                    </td>
+
+                    {/* Status */}
+                    <td style={{ padding: '14px 18px' }}>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 12,
+                          background: m.status === 'Active' ? '#ECFDF5' : '#FFFBEB',
+                          color: m.status === 'Active' ? '#059669' : '#B45309',
+                          border: m.status === 'Active' ? '1px solid #A7F3D0' : '1px solid #FDE68A',
+                          display: 'inline-block',
+                        }}
+                      >
+                        {m.status}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
+                    <td style={{ padding: '14px 24px', textAlign: 'right' }}>
+                      {m.role !== 'Super Admin' ? (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMember(m.id, m.name)}
+                          style={{
+                            height: 30,
+                            padding: '0 10px',
+                            borderRadius: 6,
+                            border: '1px solid #FECACA',
+                            background: '#FEF2F2',
+                            color: '#DC2626',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                          title="Remove Admin"
+                        >
+                          <Trash2 size={12} />
+                          <span>Remove</span>
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600 }}>
+                          Primary Owner
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -630,7 +717,7 @@ export default function SettingsPage() {
                 </label>
                 <select
                   value={inviteRole}
-                  onChange={e => setInviteRole(e.target.value)}
+                  onChange={e => setInviteRole(e.target.value as AdminRole)}
                   style={{
                     width: '100%',
                     height: 40,
