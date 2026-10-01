@@ -115,7 +115,7 @@ export default function Sidebar() {
             >
               <Icon size={16} strokeWidth={2} style={{ color: isActive ? '#ffffff' : '#64748B', flexShrink: 0 }} />
               <span style={{
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: isActive ? 700 : 600,
                 color: isActive ? '#ffffff' : '#475569',
                 flex: 1,
