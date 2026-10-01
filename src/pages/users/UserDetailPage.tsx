@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Phone, Mail, MapPin, AlertTriangle, ShieldCheck, Car,
-  CheckCircle2, Baby, UserCheck, Award, Ban, Check, Send
+  CheckCircle2, Baby, UserCheck, Award, Ban, Check, Send,
+  Users, Footprints, Clock, ShieldAlert, GraduationCap, Star
 } from 'lucide-react';
 import { INITIAL_USERS, UserItem, UserRole } from '@/constants/mockUsers';
 
@@ -185,7 +186,7 @@ export default function UserDetailPage() {
                       border: currentUser.roles.length === 3 ? '1px solid #D8B4FE' : '1px solid #CBD5E1',
                     }}
                   >
-                    {currentUser.roles.length === 3 ? '★ Multi-Role (3 Roles)' : 'Dual-Mode'}
+                    {currentUser.roles.length === 3 ? 'Multi-Role (3 Roles)' : 'Dual-Mode'}
                   </span>
                 )}
               </div>
@@ -306,7 +307,7 @@ export default function UserDetailPage() {
           <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 16px', background: '#FFFFFF' }}>
             <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B' }}>Trust & Safety Rating</span>
             <p style={{ fontSize: 20, fontWeight: 800, color: '#059669', margin: '4px 0 0' }}>
-              {currentUser.details?.rating?.split('★')[0]?.trim() || '5.0'} ★
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>{currentUser.details?.rating?.split('★')[0]?.trim() || '5.0'} <Star size={16} fill="#F59E0B" color="#F59E0B" /></span>
             </p>
           </div>
           <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 16px', background: '#FFFFFF' }}>
@@ -355,9 +356,10 @@ export default function UserDetailPage() {
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  <span>
-                    {role === 'Parent' ? '👨‍👩‍👧 Parent' : role === 'Driver' ? '🚗 Driver' : '🚶 Walker'}
-                  </span>
+                  {role === 'Parent' && <Users size={15} color={isSelected ? '#1B2B68' : '#64748B'} />}
+                  {role === 'Driver' && <Car size={15} color={isSelected ? '#B45309' : '#64748B'} />}
+                  {role === 'Walker' && <Footprints size={15} color={isSelected ? '#047857' : '#64748B'} />}
+                  <span>{role}</span>
                   {isEnrolled ? (
                     <span
                       style={{
@@ -421,8 +423,26 @@ export default function UserDetailPage() {
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                              <span style={{ fontSize: 28 }}>{child.avatar}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              <div
+                                style={{
+                                  width: 44,
+                                  height: 44,
+                                  borderRadius: 12,
+                                  background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
+                                  color: '#1B2B68',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontWeight: 800,
+                                  fontSize: 14,
+                                  border: '1px solid #C7D2FE',
+                                  boxShadow: '0 1px 2px rgba(27, 43, 104, 0.06)',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {child.name.split(' ').map(n => n[0]).join('')}
+                              </div>
                               <div>
                                 <h4 style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', margin: 0 }}>
                                   {child.name}
@@ -458,9 +478,15 @@ export default function UserDetailPage() {
                             <span style={{ fontSize: 12, color: '#64748B' }}>
                               {child.schoolAddress}
                             </span>
-                            <div style={{ display: 'flex', gap: 14, marginTop: 4, fontSize: 12, fontWeight: 600, color: '#1B2B68' }}>
-                              <span>🌅 Pickup: {child.pickupTime}</span>
-                              <span>🌆 Dropoff: {child.dropoffTime}</span>
+                            <div style={{ display: 'flex', gap: 10, marginTop: 6, flexWrap: 'wrap' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700, color: '#1E293B' }}>
+                                <Clock size={13} color="#1B2B68" />
+                                <span>Pickup: {child.pickupTime}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700, color: '#1E293B' }}>
+                                <Clock size={13} color="#059669" />
+                                <span>Dropoff: {child.dropoffTime}</span>
+                              </div>
                             </div>
                           </div>
 
@@ -478,9 +504,12 @@ export default function UserDetailPage() {
                               </strong>
                             </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, background: '#FEF3C7', padding: '6px 10px', borderRadius: 8, color: '#92400E' }}>
-                              <strong style={{ fontSize: 11 }}>Safety & Medical Instructions:</strong>
-                              <span>{child.notes}</span>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#FFFBEB', border: '1px solid #FDE68A', padding: '8px 12px', borderRadius: 8, color: '#92400E' }}>
+                              <ShieldAlert size={14} color="#B45309" style={{ flexShrink: 0, marginTop: 2 }} />
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 12 }}>
+                                <strong style={{ fontSize: 11 }}>Safety & Medical Instructions:</strong>
+                                <span>{child.notes}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -679,7 +708,7 @@ export default function UserDetailPage() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', paddingBottom: 6 }}>
                           <span style={{ color: '#64748B' }}>Driver Rating:</span>
-                          <strong style={{ color: '#B45309' }}>{currentUser.driverDetails.rating} ★ (from parent reviews)</strong>
+                          <strong style={{ color: '#B45309' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>{currentUser.driverDetails.rating} <Star size={13} fill="#F59E0B" color="#F59E0B" /> (from parent reviews)</span></strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', paddingBottom: 6 }}>
                           <span style={{ color: '#64748B' }}>On-Time Arrival Rate:</span>
@@ -816,7 +845,7 @@ export default function UserDetailPage() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', paddingBottom: 6 }}>
                           <span style={{ color: '#64748B' }}>Walker Rating:</span>
-                          <strong style={{ color: '#B45309' }}>{currentUser.walkerDetails.rating} ★ (from parents)</strong>
+                          <strong style={{ color: '#B45309' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>{currentUser.walkerDetails.rating} <Star size={13} fill="#F59E0B" color="#F59E0B" /> (from parents)</span></strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', paddingBottom: 6 }}>
                           <span style={{ color: '#64748B' }}>Punctuality Score:</span>

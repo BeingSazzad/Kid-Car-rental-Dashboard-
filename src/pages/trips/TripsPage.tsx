@@ -325,7 +325,7 @@ export default function TripsPage() {
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  {s === 'All' ? 'All Shifts' : s === 'Morning' ? '🌅 Morning Bell' : '🌆 Afternoon Drop'}
+                  {s === 'All' ? 'All Shifts' : s === 'Morning' ? 'Morning Bell' : 'Afternoon Drop'}
                 </button>
               );
             })}

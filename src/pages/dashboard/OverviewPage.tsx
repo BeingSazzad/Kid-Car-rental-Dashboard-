@@ -52,24 +52,24 @@ const REVENUE_BY_YEAR: Record<string, Array<{ month: string; parent: number; dri
 };
 
 const userGrowthData = [
-  { month: 'Jan', parents: 210, providers: 38 },
-  { month: 'Feb', parents: 280, providers: 52 },
-  { month: 'Mar', parents: 340, providers: 61 },
-  { month: 'Apr', parents: 420, providers: 74 },
-  { month: 'May', parents: 510, providers: 88 },
-  { month: 'Jun', parents: 620, providers: 99 },
-  { month: 'Jul', parents: 750, providers: 115 },
-  { month: 'Aug', parents: 880, providers: 132 },
-  { month: 'Sep', parents: 1020, providers: 148 },
-  { month: 'Oct', parents: 1160, providers: 162 },
-  { month: 'Nov', parents: 1248, providers: 176 },
+  { month: 'Jan', parents: 210, drivers: 28, walkers: 10 },
+  { month: 'Feb', parents: 280, drivers: 38, walkers: 14 },
+  { month: 'Mar', parents: 340, drivers: 45, walkers: 16 },
+  { month: 'Apr', parents: 420, drivers: 56, walkers: 18 },
+  { month: 'May', parents: 510, drivers: 68, walkers: 20 },
+  { month: 'Jun', parents: 620, drivers: 76, walkers: 23 },
+  { month: 'Jul', parents: 750, drivers: 89, walkers: 26 },
+  { month: 'Aug', parents: 880, drivers: 104, walkers: 28 },
+  { month: 'Sep', parents: 1020, drivers: 118, walkers: 30 },
+  { month: 'Oct', parents: 1160, drivers: 130, walkers: 32 },
+  { month: 'Nov', parents: 1248, drivers: 142, walkers: 34 },
 ];
 
 
 const userComposition = [
   { name: 'Parents', value: 1248, color: '#1B2B68' },
-  { name: 'Drivers', value: 142, color: '#F2600C' },
-  { name: 'Walkers', value: 34, color: '#10B981' },
+  { name: 'Drivers', value: 142, color: '#059669' },
+  { name: 'Walkers', value: 34, color: '#D97706' },
 ];
 
 const recentUsers = [
@@ -190,7 +190,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
   // Detect whether this dataset represents counts (e.g. User Growth) or currency (Revenue, Earnings)
   const isCount = payload.some((p: any) =>
-    p.dataKey === 'parents' || p.dataKey === 'providers' || (p.name && p.name.toLowerCase().includes('user'))
+    p.dataKey === 'parents' || p.dataKey === 'drivers' || p.dataKey === 'walkers' || (p.name && p.name.toLowerCase().includes('user'))
   );
 
   // Compute total if more than 1 item in payload
@@ -381,7 +381,8 @@ export default function OverviewPage() {
               <Tooltip content={<CustomTooltip />} />
               <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 10 }} />
               <Line type="monotone" dataKey="parents" name="Parents" stroke="#1B2B68" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#1B2B68' }} />
-              <Line type="monotone" dataKey="providers" name="Providers" stroke="#F2600C" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#F2600C' }} />
+              <Line type="monotone" dataKey="drivers" name="Drivers" stroke="#059669" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#059669' }} />
+              <Line type="monotone" dataKey="walkers" name="Walkers" stroke="#D97706" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#D97706' }} />
             </LineChart>
           </ResponsiveContainer>
         </SectionCard>

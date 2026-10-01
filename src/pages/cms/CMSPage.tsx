@@ -1309,7 +1309,7 @@ function AppBrandingManager() {
             boxShadow: activeScreenTab === 'onboarding' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
           }}
         >
-          📱 Onboarding Screen
+          Onboarding Screen
         </button>
         <button
           onClick={() => setActiveScreenTab('splash')}
@@ -1325,7 +1325,7 @@ function AppBrandingManager() {
             boxShadow: activeScreenTab === 'splash' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
           }}
         >
-          🚀 Splash Loading Screen
+          Splash Loading Screen
         </button>
         <button
           onClick={() => setActiveScreenTab('logo')}
@@ -1341,7 +1341,7 @@ function AppBrandingManager() {
             boxShadow: activeScreenTab === 'logo' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
           }}
         >
-          🏷️ App Emblem Logo
+          App Emblem Logo
         </button>
       </div>
 
