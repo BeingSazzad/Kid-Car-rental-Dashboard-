@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -132,11 +133,13 @@ const SectionCard = ({
   children,
   action,
   extra,
+  onAction,
 }: {
   title: string;
   children: React.ReactNode;
   action?: string;
   extra?: React.ReactNode;
+  onAction?: () => void;
 }) => (
   <div style={{
     background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14,
@@ -149,7 +152,10 @@ const SectionCard = ({
       <p style={{ fontSize: 16, fontWeight: 700, color: '#1A1D24', margin: 0 }}>{title}</p>
       {extra && <div>{extra}</div>}
       {action && !extra && (
-        <button style={{ fontSize: 12, fontWeight: 600, color: '#1B2B68', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}>
+        <button
+          onClick={onAction}
+          style={{ fontSize: 12, fontWeight: 700, color: '#1B2B68', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}
+        >
           {action} <ChevronRight size={12} />
         </button>
       )}
@@ -302,6 +308,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 /* ─── Main Page ─── */
 export default function OverviewPage() {
+  const navigate = useNavigate();
   const [revenueYear, setRevenueYear] = useState('2026');
   const totalUsers = userComposition.reduce((a, b) => a + b.value, 0);
 
@@ -388,42 +395,36 @@ export default function OverviewPage() {
         </SectionCard>
       </div>
 
-      {/* Charts Row 2: Top Earners + Pie + RAG Gauge */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16 }}>
-        {/* Top Earners Bar */}
-        <SectionCard title="School Transit Safety & Live Operations">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Child Booster Seats</span>
-                  <p style={{ fontSize: 15, fontWeight: 800, color: '#059669', margin: '4px 0 0' }}>100% Ontario HTA Verified</p>
-                  <span style={{ fontSize: 11, color: '#64748B' }}>Diono & Britax seats secured</span>
-                </div>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Police Sector Clearance</span>
-                  <p style={{ fontSize: 15, fontWeight: 800, color: '#1B2B68', margin: '4px 0 0' }}>100% VSC Cleared</p>
-                  <span style={{ fontSize: 11, color: '#64748B' }}>All drivers & walk escorts vetted</span>
-                </div>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Morning Bell Punctuality</span>
-                  <p style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', margin: '4px 0 0' }}>99.4% On-Time</p>
-                  <span style={{ fontSize: 11, color: '#059669' }}>+0.8% vs last month</span>
-                </div>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px' }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Safety Streak</span>
-                  <p style={{ fontSize: 15, fontWeight: 800, color: '#059669', margin: '4px 0 0' }}>42 Safe Days</p>
-                  <span style={{ fontSize: 11, color: '#64748B' }}>Zero safety incidents logged</span>
-                </div>
-              </div>
+      {/* Row 3: Latest Registrations (Left) + Users Composition (Right) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16 }}>
+        {/* Latest Registrations */}
+        <SectionCard title="Latest Registrations" action="View All" onAction={() => navigate('/users')}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                {['Name', 'Role', 'Date', 'Status'].map(h => (
+                  <th key={h} style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', textAlign: 'left', paddingBottom: 10, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {recentUsers.map((u, i) => (
+                <tr
+                  key={i}
+                  onClick={() => navigate('/users')}
+                  style={{ borderTop: '1px solid #F8FAFC', cursor: 'pointer' }}
+                >
+                  <td style={{ padding: '10px 0', fontSize: 14, fontWeight: 600, color: '#1A1D24' }}>{u.name}</td>
+                  <td style={{ padding: '10px 0' }}><RoleChip role={u.role} /></td>
+                  <td style={{ padding: '10px 0', fontSize: 12, fontWeight: 500, color: '#64748B' }}>{u.date}</td>
+                  <td style={{ padding: '10px 0' }}><StatusChip status={u.status} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </SectionCard>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#EEF2FF', borderRadius: 8, padding: '10px 14px', fontSize: 12, fontWeight: 600, color: '#1B2B68' }}>
-                <span>Active School Corridors: 14 Van Carpools • 8 Walking School Buses</span>
-                <span style={{ color: '#059669', fontWeight: 800 }}>● Live Fleet Monitored</span>
-              </div>
-            </div>
-          </SectionCard>
-
-        {/* Pie Chart */}
+        {/* Pie Chart: Users Composition */}
         <SectionCard title="Users">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <div style={{ position: 'relative' }}>
@@ -449,55 +450,6 @@ export default function OverviewPage() {
               ))}
             </div>
           </div>
-        </SectionCard>
-      </div>
-
-      {/* Tables Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        {/* Recent Users */}
-        <SectionCard title="Latest Registrations" action="View All">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {['Name', 'Role', 'Date', 'Status'].map(h => (
-                  <th key={h} style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', textAlign: 'left', paddingBottom: 10, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {recentUsers.map((u, i) => (
-                <tr key={i} style={{ borderTop: '1px solid #F8FAFC' }}>
-                  <td style={{ padding: '10px 0', fontSize: 14, fontWeight: 600, color: '#1A1D24' }}>{u.name}</td>
-                  <td style={{ padding: '10px 0' }}><RoleChip role={u.role} /></td>
-                  <td style={{ padding: '10px 0', fontSize: 12, fontWeight: 500, color: '#64748B' }}>{u.date}</td>
-                  <td style={{ padding: '10px 0' }}><StatusChip status={u.status} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </SectionCard>
-
-        {/* Recent Transactions */}
-        <SectionCard title="Latest Transactions" action="View All">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {['User', 'Package', 'Amount', 'Status'].map(h => (
-                  <th key={h} style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', textAlign: 'left', paddingBottom: 10, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {recentTx.map((t, i) => (
-                <tr key={i} style={{ borderTop: '1px solid #F8FAFC' }}>
-                  <td style={{ padding: '10px 0', fontSize: 14, fontWeight: 600, color: '#1A1D24' }}>{t.user}</td>
-                  <td style={{ padding: '10px 0', fontSize: 12, fontWeight: 500, color: '#64748B' }}>{t.package}</td>
-                  <td style={{ padding: '10px 0', fontSize: 14, fontWeight: 700, color: '#1A1D24' }}>{t.amount}</td>
-                  <td style={{ padding: '10px 0' }}><StatusChip status={t.status} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </SectionCard>
       </div>
     </div>

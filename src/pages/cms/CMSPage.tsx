@@ -5,7 +5,7 @@ import { useState } from 'react';
 import {
   Plus, Trash2, Edit2, X, ChevronDown, ChevronUp,
   GripVertical, Check, ArrowUp, ArrowDown, Copy, Shield, FileText, HelpCircle, Info, Search, Phone, Mail, AlertTriangle
-, Upload, Smartphone } from 'lucide-react';
+, Upload, Smartphone, UploadCloud, Image as ImageIcon, RotateCcw, CheckCircle } from 'lucide-react';
 import { RichTextEditor } from './RichTextEditor';
 
 /* — Types — */
@@ -1244,13 +1244,227 @@ function EmergencyContactsManager() {
 /* — MAIN CMS PAGE EXPORT — */
 
 /* — App Screens & Branding Manager Component — */
+/* — Dedicated Standard Ratio Image Upload Zone — */
+function ImageUploadDropzone({
+  label,
+  recommendedRatio,
+  standardType,
+  currentImage,
+  onImageChange,
+  previewHeight = 140,
+}: {
+  label: string;
+  recommendedRatio: string;
+  standardType: string;
+  currentImage: string;
+  onImageChange: (dataUrl: string) => void;
+  previewHeight?: number;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [fileDetails, setFileDetails] = useState<{ name: string; size: string } | null>(null);
+  const fileInputRef = useState<{ current: HTMLInputElement | null }>({ current: null })[0];
+
+  const handleFile = (file: File) => {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('Please upload a valid image file (PNG, JPG, SVG, WebP)');
+      return;
+    }
+    const sizeKB = (file.size / 1024).toFixed(1);
+    setFileDetails({
+      name: file.name,
+      size: Number(sizeKB) > 1024 ? (file.size / (1024 * 1024)).toFixed(2) + ' MB' : sizeKB + ' KB',
+    });
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        onImageChange(e.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
+        <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
+          {label}
+        </label>
+        <span style={{ fontSize: 11, fontWeight: 700, background: '#EEF2FF', color: '#1B2B68', padding: '3px 8px', borderRadius: 6, border: '1px solid #C7D2FE' }}>
+          Standard Ratio: {recommendedRatio}
+        </span>
+      </div>
+
+      <input
+        type="file"
+        ref={(el) => { fileInputRef.current = el; }}
+        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            handleFile(e.target.files[0]);
+          }
+        }}
+      />
+
+      {/* Upload Box Container */}
+      <div
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={handleDrop}
+        style={{
+          border: `2px dashed ${isDragging ? '#1B2B68' : '#CBD5E1'}`,
+          background: isDragging ? '#F0F4FF' : '#F8FAFC',
+          borderRadius: 12,
+          padding: 18,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 12,
+          transition: 'all 0.15s ease',
+        }}
+      >
+        {currentImage ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, width: '100%' }}>
+            {/* Image Preview Box */}
+            <div
+              style={{
+                width: 90,
+                height: 90,
+                borderRadius: 10,
+                background: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                flexShrink: 0,
+                boxShadow: '0 2px 5px rgba(0,0,0,0.04)',
+                padding: 4,
+              }}
+            >
+              <img
+                src={currentImage}
+                alt="Uploaded Asset"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+
+            {/* File Info & Action Buttons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <CheckCircle size={15} color="#059669" />
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>
+                  {fileDetails ? fileDetails.name : 'Active Graphic Loaded'}
+                </span>
+                {fileDetails && (
+                  <span style={{ fontSize: 11, color: '#64748B' }}>({fileDetails.size})</span>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 11, color: '#059669', background: '#ECFDF5', padding: '2px 8px', borderRadius: 99, fontWeight: 700 }}>
+                  ✓ Standard {standardType}
+                </span>
+                <span style={{ fontSize: 11, color: '#64748B' }}>
+                  Aspect Ratio: {recommendedRatio}
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #1B2B68',
+                    background: '#1B2B68',
+                    color: '#FFFFFF',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <UploadCloud size={13} />
+                  <span>Upload New Image</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onImageChange('/logo.png');
+                    setFileDetails(null);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <RotateCcw size={12} />
+                  <span>Reset Default</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer', textAlign: 'center', width: '100%', padding: '12px 0' }}
+          >
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1B2B68' }}>
+              <UploadCloud size={24} />
+            </div>
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                Click to browse or drag & drop image
+              </p>
+              <p style={{ fontSize: 11, color: '#64748B', margin: '2px 0 0' }}>
+                PNG, JPG, WebP, SVG • Standard {recommendedRatio}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* — App Screens & Branding Manager Component — */
 function AppBrandingManager() {
   const [logoUrl, setLogoUrl] = useState('/logo.png');
+  const [onboardingImage, setOnboardingImage] = useState('/logo.png');
+  const [splashLogo, setSplashLogo] = useState('/logo.png');
   const [splashBg, setSplashBg] = useState('#1B2B68');
   const [splashText, setSplashText] = useState('Home2School');
   const [onboardingTitle, setOnboardingTitle] = useState('Welcome to Home2School');
   const [onboardingSubtitle, setOnboardingSubtitle] = useState('Safe school rides & certified walking escorts for students, trusted by verified neighbourhood families.');
-  const [activeScreenTab, setActiveScreenTab] = useState<'splash' | 'onboarding' | 'logo'>('onboarding');
+  const [activeScreenTab, setActiveScreenTab] = useState<'onboarding' | 'splash' | 'logo'>('onboarding');
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -1260,13 +1474,14 @@ function AppBrandingManager() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Top Action Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: 14 }}>
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
             Mobile App Screens & Brand Assets
           </h2>
           <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
-            Dynamically configure the customer mobile app logo, splash loading screen, and onboarding welcome graphics.
+            Direct image upload with standard mobile viewports (430 × 932 px) and live smartphone mockup preview.
           </p>
         </div>
 
@@ -1348,9 +1563,17 @@ function AppBrandingManager() {
       {/* Editor & Smartphone Mockup Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) 340px', gap: 24, alignItems: 'start' }}>
         {/* Left Form Controls */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column', gap: 18 }}>
           {activeScreenTab === 'onboarding' && (
             <>
+              <ImageUploadDropzone
+                label="Onboarding Hero Artwork / Mobile Screen"
+                recommendedRatio="430 × 932 px (19.5:9 Mobile Ratio)"
+                standardType="Mobile Viewport"
+                currentImage={onboardingImage}
+                onImageChange={setOnboardingImage}
+              />
+
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
                   Main Welcome Headline
@@ -1374,28 +1597,27 @@ function AppBrandingManager() {
                 />
               </div>
 
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
-                  Hero Image
-                </label>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <input
-                    defaultValue="/images/van-hero.jpg"
-                    style={{ flex: 1, height: 38, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 13, color: '#0F172A', outline: 'none' }}
-                  />
-                  <button style={{ height: 38, padding: '0 14px', borderRadius: 8, border: '1px solid #CBD5E1', background: '#F8FAFC', fontSize: 12, fontWeight: 700, color: '#1B2B68', cursor: 'pointer' }}>
-                    Browse
-                  </button>
-                </div>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px', fontSize: 12, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <strong style={{ color: '#0F172A' }}>Standard Mobile Ratio Specifications:</strong>
+                <span>• Designed for standard smartphone resolutions: 430 × 932 px (19.5:9 aspect ratio).</span>
+                <span>• High-DPI screens automatically scale gracefully without cropping text or action buttons.</span>
               </div>
             </>
           )}
 
           {activeScreenTab === 'splash' && (
             <>
+              <ImageUploadDropzone
+                label="Splash Screen Center Emblem / Artwork"
+                recommendedRatio="430 × 932 px (Full Splash) or 512 × 512 px (Emblem)"
+                standardType="Splash Screen"
+                currentImage={splashLogo}
+                onImageChange={setSplashLogo}
+              />
+
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
-                  Splash Background Color
+                  Splash Background Brand Color
                 </label>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                   <input
@@ -1422,26 +1644,30 @@ function AppBrandingManager() {
                   style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontWeight: 600, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
+
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 14px', fontSize: 12, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <strong style={{ color: '#0F172A' }}>Splash Screen Guidelines:</strong>
+                <span>• Center emblem is centered with brand wordmark against the primary brand tone.</span>
+                <span>• Fits modern mobile screen ratios (19.5:9, 18:9, 16:9).</span>
+              </div>
             </>
           )}
 
           {activeScreenTab === 'logo' && (
             <>
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
-                  Official App Emblem Path / URL
-                </label>
-                <input
-                  value={logoUrl}
-                  onChange={e => setLogoUrl(e.target.value)}
-                  style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
+              <ImageUploadDropzone
+                label="Official App Emblem / Master Icon"
+                recommendedRatio="512 × 512 px (1:1 Standard Square)"
+                standardType="App Emblem"
+                currentImage={logoUrl}
+                onImageChange={setLogoUrl}
+              />
 
               <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '14px', fontSize: 12, color: '#64748B', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <strong style={{ color: '#0F172A' }}>Asset Guidelines:</strong>
-                <span>• Dimensions: Minimum 512 x 512 px PNG with alpha transparency</span>
-                <span>• Used across: Mobile app icon, Topbar emblem, and official receipt PDF headers</span>
+                <strong style={{ color: '#0F172A' }}>Emblem Logo Asset Guidelines:</strong>
+                <span>• Ratio: Exact 1:1 square ratio (Minimum 512 × 512 px recommended, 1024 × 1024 px for Retina).</span>
+                <span>• Format: PNG with alpha transparency or SVG vector.</span>
+                <span>• Synchronized across: Mobile App Icon, Dashboard Topbar, and Parents Email Notifications.</span>
               </div>
             </>
           )}
@@ -1449,38 +1675,79 @@ function AppBrandingManager() {
 
         {/* Right Smartphone Frame Live Mockup */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Live Phone Preview
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Smartphone size={14} color="#64748B" />
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Standard Phone Preview (430 × 932 px)
+            </span>
+          </div>
 
           <div
             style={{
-              width: 300,
-              height: 580,
+              width: 310,
+              height: 610,
               borderRadius: 36,
               border: '10px solid #0F172A',
-              boxShadow: '0 20px 30px rgba(0,0,0,0.18)',
+              boxShadow: '0 20px 35px rgba(0,0,0,0.18)',
               overflow: 'hidden',
               background: activeScreenTab === 'splash' ? splashBg : '#F8FAFC',
               display: 'flex',
               flexDirection: 'column',
               position: 'relative',
+              transition: 'background 0.2s ease',
             }}
           >
             {/* Speaker Notch */}
             <div style={{ width: 100, height: 16, background: '#0F172A', borderRadius: '0 0 12px 12px', margin: '0 auto', position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }} />
 
             {activeScreenTab === 'splash' ? (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: '#FFFFFF' }}>
-                <img src={logoUrl} alt="Logo" style={{ width: 110, height: 110, objectFit: 'contain' }} />
-                <h3 style={{ fontSize: 24, fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: '#FFFFFF', padding: 24, textAlign: 'center' }}>
+                <div style={{ width: 110, height: 110, borderRadius: 24, background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12, border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <img src={splashLogo} alt="Splash Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
+                <h3 style={{ fontSize: 24, fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
                   {splashText}
                 </h3>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Safe School Rides & Walking Escorts</span>
+              </div>
+            ) : activeScreenTab === 'logo' ? (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 18px 24px', justifyContent: 'space-between', background: '#F8FAFC' }}>
+                <div style={{ textAlign: 'center', marginTop: 30 }}>
+                  <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 28, background: '#FFFFFF', boxShadow: '0 10px 25px rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18, border: '1px solid #E2E8F0' }}>
+                    <img src={logoUrl} alt="App Icon Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <h4 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', marginTop: 16, marginBottom: 4 }}>
+                    Home2School
+                  </h4>
+                  <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
+                    Official Master App Icon (1:1 Square)
+                  </p>
+                </div>
+
+                <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Preview Locations:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#334155' }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 6, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={logoUrl} alt="Nav" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+                    </div>
+                    <span>Topbar App Emblem</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#334155' }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 6, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={logoUrl} alt="Push" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+                    </div>
+                    <span>Push Notification Avatar</span>
+                  </div>
+                </div>
+
+                <div style={{ background: '#1B2B68', color: '#FFFFFF', padding: '10px 0', borderRadius: 8, fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+                  Open Mobile App
+                </div>
               </div>
             ) : (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 18px 24px', justifyContent: 'space-between' }}>
-                <div style={{ width: '100%', height: 220, borderRadius: 16, background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  <img src={logoUrl} alt="Hero" style={{ width: 120, height: 120, objectFit: 'contain' }} />
+                <div style={{ width: '100%', height: 240, borderRadius: 16, background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: 12 }}>
+                  <img src={onboardingImage} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
 
                 <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8 }}>
