@@ -65,16 +65,6 @@ const INITIAL_PLANS: Plan[] = [
   },
 ];
 
-const PRESET_FEATURES = [
-  '$0 Platform booking fees',
-  'Guaranteed dedicated recurring driver',
-  'Up to 3 children profiles',
-  'School gate photo check-in',
-  'Morning rush-hour priority dispatch',
-  'Zero cancellation fees for sick days',
-  '10% discount on total ride fares',
-];
-
 export default function PackagesPage() {
   const [plans, setPlans] = useState<Plan[]>(INITIAL_PLANS);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
@@ -84,12 +74,10 @@ export default function PackagesPage() {
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
 
-  // Form Fields
+  // Form Fields (Minimalist)
   const [name, setName] = useState('');
-  const [targetAudience, setTargetAudience] = useState('');
   const [priceAmount, setPriceAmount] = useState('19.99');
   const [period, setPeriod] = useState('/ month');
-  const [customPeriod, setCustomPeriod] = useState('');
   const [badge, setBadge] = useState('');
   const [features, setFeatures] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState('');
@@ -107,10 +95,8 @@ export default function PackagesPage() {
     setModalMode('create');
     setSelectedPlanId(null);
     setName('');
-    setTargetAudience('');
     setPriceAmount('19.99');
     setPeriod('/ month');
-    setCustomPeriod('');
     setBadge('');
     setFeatures([
       'Up to 3 Children profiles included',
@@ -127,17 +113,8 @@ export default function PackagesPage() {
     setModalMode('edit');
     setSelectedPlanId(p.id);
     setName(p.name);
-    setTargetAudience(p.targetAudience);
     setPriceAmount(p.price.replace('$', '').trim());
-
-    if (['Free forever', '/ month', '/ school term (5 months)', '/ year'].includes(p.period)) {
-      setPeriod(p.period);
-      setCustomPeriod('');
-    } else {
-      setPeriod('custom');
-      setCustomPeriod(p.period);
-    }
-
+    setPeriod(p.period);
     setBadge(p.badge);
     setFeatures([...p.features]);
     setNewFeature('');
@@ -150,11 +127,11 @@ export default function PackagesPage() {
     setOpenMenuId(null);
   };
 
-  const handleAddFeature = (featToAdd?: string) => {
-    const feat = (featToAdd || newFeature).trim();
+  const handleAddFeature = () => {
+    const feat = newFeature.trim();
     if (feat && !features.includes(feat)) {
       setFeatures([...features, feat]);
-      if (!featToAdd) setNewFeature('');
+      setNewFeature('');
     }
   };
 
@@ -166,16 +143,15 @@ export default function PackagesPage() {
     if (!name.trim()) return;
 
     const finalPrice = priceAmount.trim() ? (priceAmount.startsWith('$') ? priceAmount : '$' + priceAmount) : '$0';
-    const finalPeriod = period === 'custom' ? (customPeriod.trim() || '/ month') : period;
 
     if (modalMode === 'create') {
       const newPlan: Plan = {
         id: Date.now(),
         name: name.trim(),
         price: finalPrice,
-        period: finalPeriod,
+        period: period.trim() || '/ month',
         badge: badge.trim(),
-        targetAudience: targetAudience.trim() || 'School commute package',
+        targetAudience: 'School commute package',
         activeSubscribers: 0,
         features: features.length > 0 ? features : ['Standard school ride booking'],
       };
@@ -187,9 +163,8 @@ export default function PackagesPage() {
               ...p,
               name: name.trim(),
               price: finalPrice,
-              period: finalPeriod,
+              period: period.trim() || p.period,
               badge: badge.trim(),
-              targetAudience: targetAudience.trim() || p.targetAudience,
               features: features.length > 0 ? features : ['Standard school ride booking'],
             }
           : p
@@ -283,7 +258,7 @@ export default function PackagesPage() {
         </div>
       </div>
 
-      {/* ── 3 Plans Grid ── */}
+      {/* ── 3 Plans Grid (Clean minimalist cards with NO bottom redundant edit button) ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
         {plans.map(p => {
           const isPopular = p.badge.toLowerCase().includes('popular') || p.badge.toLowerCase().includes('best');
@@ -297,201 +272,173 @@ export default function PackagesPage() {
                 padding: '24px 22px',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between',
                 boxShadow: isPopular ? '0 4px 14px rgba(27, 43, 104, 0.08)' : '0 1px 3px rgba(0,0,0,0.02)',
                 position: 'relative',
                 transition: 'all 0.15s ease',
               }}
             >
-              <div>
-                {/* Top row: Name, optional Badge, and 3-dot Menu */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
-                      {p.name}
-                    </span>
-                    {p.badge && (
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 700,
-                          background: p.badge === 'Most Popular' ? '#1B2B68' : '#ECFDF5',
-                          color: p.badge === 'Most Popular' ? '#FFFFFF' : '#059669',
-                          padding: '2px 8px',
-                          borderRadius: 99,
-                          letterSpacing: '0.02em',
-                        }}
-                      >
-                        {p.badge}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* 3-dot button & Popover */}
-                  <div style={{ position: 'relative' }}>
-                    <button
-                      onClick={e => {
-                        e.stopPropagation();
-                        setOpenMenuId(openMenuId === p.id ? null : p.id);
-                      }}
-                      title="Plan Options"
+              {/* Top row: Name, optional Badge, and 3-dot Menu */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
+                    {p.name}
+                  </span>
+                  {p.badge && (
+                    <span
                       style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 8,
-                        border: '1px solid #E2E8F0',
-                        background: openMenuId === p.id ? '#F1F5F9' : '#FFFFFF',
-                        color: '#64748B',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.15s ease',
+                        fontSize: 10,
+                        fontWeight: 700,
+                        background: p.badge === 'Most Popular' ? '#1B2B68' : '#ECFDF5',
+                        color: p.badge === 'Most Popular' ? '#FFFFFF' : '#059669',
+                        padding: '2px 8px',
+                        borderRadius: 99,
+                        letterSpacing: '0.02em',
                       }}
                     >
-                      <MoreHorizontal size={16} />
-                    </button>
+                      {p.badge}
+                    </span>
+                  )}
+                </div>
 
-                    {/* 3-dot Dropdown Menu (Edit & Delete) */}
-                    {openMenuId === p.id && (
-                      <div
-                        onClick={e => e.stopPropagation()}
+                {/* 3-dot button & Popover */}
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      setOpenMenuId(openMenuId === p.id ? null : p.id);
+                    }}
+                    title="Plan Options"
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
+                      border: '1px solid #E2E8F0',
+                      background: openMenuId === p.id ? '#F1F5F9' : '#FFFFFF',
+                      color: '#64748B',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <MoreHorizontal size={16} />
+                  </button>
+
+                  {/* 3-dot Dropdown Menu (Edit & Delete) */}
+                  {openMenuId === p.id && (
+                    <div
+                      onClick={e => e.stopPropagation()}
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 38,
+                        width: 130,
+                        background: '#FFFFFF',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 10,
+                        padding: 4,
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                        zIndex: 30,
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <button
+                        onClick={() => openEditModal(p)}
                         style={{
-                          position: 'absolute',
-                          right: 0,
-                          top: 38,
-                          width: 130,
-                          background: '#FFFFFF',
-                          border: '1px solid #E2E8F0',
-                          borderRadius: 10,
-                          padding: 4,
-                          boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-                          zIndex: 30,
                           display: 'flex',
-                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '8px 10px',
+                          border: 'none',
+                          background: 'none',
+                          borderRadius: 6,
+                          color: '#1E293B',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'background 0.1s ease',
                         }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                       >
-                        <button
-                          onClick={() => openEditModal(p)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            padding: '8px 10px',
-                            border: 'none',
-                            background: 'none',
-                            borderRadius: 6,
-                            color: '#1E293B',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            transition: 'background 0.1s ease',
-                          }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                        >
-                          <Edit2 size={14} style={{ color: '#1B2B68' }} /> Edit Plan
-                        </button>
+                        <Edit2 size={14} style={{ color: '#1B2B68' }} /> Edit Plan
+                      </button>
 
-                        <div style={{ height: 1, background: '#F1F5F9', margin: '3px 0' }} />
+                      <div style={{ height: 1, background: '#F1F5F9', margin: '3px 0' }} />
 
-                        <button
-                          onClick={() => handleDeletePlan(p.id)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            padding: '8px 10px',
-                            border: 'none',
-                            background: 'none',
-                            borderRadius: 6,
-                            color: '#EF4444',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            transition: 'background 0.1s ease',
-                          }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                        >
-                          <Trash2 size={14} style={{ color: '#EF4444' }} /> Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Subtitle / Target Audience */}
-                <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 16px', lineHeight: 1.4 }}>
-                  {p.targetAudience}
-                </p>
-
-                {/* Price Line */}
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: 32, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                    {p.price}
-                  </span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>
-                    {p.period}
-                  </span>
-                </div>
-
-                {/* Active subscriber count */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F8FAFC', padding: '3px 8px', borderRadius: 6, marginBottom: 16 }}>
-                  <Users size={12} color="#64748B" />
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>
-                    {p.activeSubscribers} parents active
-                  </span>
-                </div>
-
-                {/* Divider line */}
-                <div style={{ borderTop: '1px solid #F1F5F9', marginBottom: 16 }} />
-
-                {/* Features list */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-                  {p.features.map(f => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                      <Check size={16} color="#059669" strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 2 }} />
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#334155', lineHeight: 1.4 }}>
-                        {f}
-                      </span>
+                      <button
+                        onClick={() => handleDeletePlan(p.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '8px 10px',
+                          border: 'none',
+                          background: 'none',
+                          borderRadius: 6,
+                          color: '#EF4444',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'background 0.1s ease',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <Trash2 size={14} style={{ color: '#EF4444' }} /> Delete
+                      </button>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
 
-              {/* Bottom Quick Action */}
-              <button
-                type="button"
-                onClick={() => openEditModal(p)}
-                style={{
-                  width: '100%',
-                  height: 36,
-                  borderRadius: 8,
-                  border: isPopular ? 'none' : '1px solid #E2E8F0',
-                  background: isPopular ? '#1B2B68' : '#F8FAFC',
-                  color: isPopular ? '#FFFFFF' : '#1B2B68',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                <Edit2 size={13} />
-                <span>Edit Plan</span>
-              </button>
+              {/* Subtitle / Target Audience */}
+              <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 16px', lineHeight: 1.4 }}>
+                {p.targetAudience}
+              </p>
+
+              {/* Price Line */}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 8 }}>
+                <span style={{ fontSize: 32, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', lineHeight: 1 }}>
+                  {p.price}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>
+                  {p.period}
+                </span>
+              </div>
+
+              {/* Active subscriber count */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F8FAFC', padding: '3px 8px', borderRadius: 6, marginBottom: 16 }}>
+                <Users size={12} color="#64748B" />
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>
+                  {p.activeSubscribers} parents active
+                </span>
+              </div>
+
+              {/* Divider line */}
+              <div style={{ borderTop: '1px solid #F1F5F9', marginBottom: 16 }} />
+
+              {/* Features list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {p.features.map(f => (
+                  <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <Check size={16} color="#059669" strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#334155', lineHeight: 1.4 }}>
+                      {f}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* ── Modal for Editing or Adding a Plan ── */}
+      {/* ── Minimalist Add / Edit Modal ── */}
       {modalOpen && (
         <div
           style={{
@@ -510,27 +457,23 @@ export default function PackagesPage() {
           <div
             style={{
               background: '#FFFFFF',
-              borderRadius: 16,
-              width: 520,
+              borderRadius: 14,
+              width: 440,
               maxWidth: '100%',
-              padding: 24,
+              padding: 22,
               boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
             }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-              <div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                  {modalMode === 'create' ? 'Add Subscription Plan' : 'Edit Subscription Plan'}
-                </h2>
-                <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                  Define package pricing, target audience, and commute benefits.
-                </p>
-              </div>
+            {/* Modal Header: Clean & Compact */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                {modalMode === 'create' ? 'Add Subscription Plan' : 'Edit Subscription Plan'}
+              </h2>
               <button
+                type="button"
                 onClick={() => setModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 2 }}
               >
                 <X size={18} />
               </button>
@@ -540,7 +483,7 @@ export default function PackagesPage() {
               {/* Plan Name */}
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>
-                  Plan Name *
+                  Plan Name
                 </label>
                 <input
                   value={name}
@@ -560,34 +503,11 @@ export default function PackagesPage() {
                 />
               </div>
 
-              {/* Target Audience / Subtitle */}
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>
-                  Target Purpose / Subtitle
-                </label>
-                <input
-                  value={targetAudience}
-                  onChange={e => setTargetAudience(e.target.value)}
-                  placeholder="e.g. For daily Monday–Friday school commutes"
-                  style={{
-                    width: '100%',
-                    height: 38,
-                    borderRadius: 8,
-                    border: '1px solid #CBD5E1',
-                    padding: '0 12px',
-                    fontSize: 14,
-                    fontFamily: 'Manrope, sans-serif',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-
               {/* Price & Billing Cycle */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
                   <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>
-                    Price ($ CAD) *
+                    Price ($ CAD)
                   </label>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                     <span style={{ position: 'absolute', left: 12, fontSize: 14, fontWeight: 700, color: '#64748B' }}>$</span>
@@ -601,7 +521,7 @@ export default function PackagesPage() {
                         borderRadius: 8,
                         border: '1px solid #CBD5E1',
                         paddingLeft: 26,
-                        paddingRight: 12,
+                        paddingRight: 10,
                         fontSize: 14,
                         fontWeight: 600,
                         fontFamily: 'Manrope, sans-serif',
@@ -614,7 +534,7 @@ export default function PackagesPage() {
 
                 <div>
                   <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>
-                    Billing Cycle *
+                    Billing Cycle
                   </label>
                   <select
                     value={period}
@@ -624,10 +544,10 @@ export default function PackagesPage() {
                       height: 38,
                       borderRadius: 8,
                       border: '1px solid #CBD5E1',
-                      padding: '0 12px',
-                      fontSize: 14,
+                      padding: '0 10px',
+                      fontSize: 12,
                       fontFamily: 'Manrope, sans-serif',
-                      fontWeight: 500,
+                      fontWeight: 600,
                       outline: 'none',
                       background: '#FFFFFF',
                       boxSizing: 'border-box',
@@ -637,77 +557,36 @@ export default function PackagesPage() {
                     <option value="/ school term (5 months)">School Term (/ term)</option>
                     <option value="/ year">Annual (/ year)</option>
                     <option value="Free forever">Free forever</option>
-                    <option value="custom">Custom cycle...</option>
                   </select>
                 </div>
               </div>
 
-              {period === 'custom' && (
-                <div>
-                  <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>
-                    Custom Billing Cycle Label
-                  </label>
-                  <input
-                    value={customPeriod}
-                    onChange={e => setCustomPeriod(e.target.value)}
-                    placeholder="e.g. / 3 months"
-                    style={{
-                      width: '100%',
-                      height: 38,
-                      borderRadius: 8,
-                      border: '1px solid #CBD5E1',
-                      padding: '0 12px',
-                      fontSize: 14,
-                      fontFamily: 'Manrope, sans-serif',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                    }}
-                  />
-                </div>
-              )}
-
               {/* Badge Tag */}
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 4 }}>
-                  Badge Tag (Optional)
+                  Badge (Optional)
                 </label>
-                <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
-                  {['', 'Most Popular', 'Best Value'].map(b => (
-                    <button
-                      key={b || 'None'}
-                      type="button"
-                      onClick={() => setBadge(b)}
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: 6,
-                        border: badge === b ? '1px solid #1B2B68' : '1px solid #E2E8F0',
-                        background: badge === b ? '#EEF2FF' : '#FFFFFF',
-                        color: badge === b ? '#1B2B68' : '#64748B',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {b || 'None'}
-                    </button>
-                  ))}
-                </div>
-                <input
+                <select
                   value={badge}
                   onChange={e => setBadge(e.target.value)}
-                  placeholder="Or enter custom badge (e.g. Limited Offer)"
                   style={{
                     width: '100%',
-                    height: 34,
+                    height: 38,
                     borderRadius: 8,
                     border: '1px solid #CBD5E1',
-                    padding: '0 12px',
+                    padding: '0 10px',
                     fontSize: 12,
                     fontFamily: 'Manrope, sans-serif',
+                    fontWeight: 600,
                     outline: 'none',
+                    background: '#FFFFFF',
                     boxSizing: 'border-box',
                   }}
-                />
+                >
+                  <option value="">No Badge</option>
+                  <option value="Most Popular">Most Popular</option>
+                  <option value="Best Value">Best Value</option>
+                </select>
               </div>
 
               {/* Features Builder */}
@@ -720,7 +599,7 @@ export default function PackagesPage() {
                     value={newFeature}
                     onChange={e => setNewFeature(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddFeature())}
-                    placeholder="Type custom feature and press Enter..."
+                    placeholder="Add a feature and press Enter..."
                     style={{
                       flex: 1,
                       height: 36,
@@ -734,7 +613,7 @@ export default function PackagesPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => handleAddFeature()}
+                    onClick={handleAddFeature}
                     style={{
                       height: 36,
                       padding: '0 14px',
@@ -751,46 +630,17 @@ export default function PackagesPage() {
                   </button>
                 </div>
 
-                {/* Quick Add Suggestions */}
-                <div style={{ marginBottom: 10 }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', margin: '0 0 6px' }}>
-                    Quick Add Suggestions:
-                  </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {PRESET_FEATURES.filter(pf => !features.includes(pf)).slice(0, 4).map(pf => (
-                      <button
-                        key={pf}
-                        type="button"
-                        onClick={() => handleAddFeature(pf)}
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 600,
-                          background: '#F8FAFC',
-                          border: '1px solid #E2E8F0',
-                          color: '#475569',
-                          padding: '3px 8px',
-                          borderRadius: 6,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        + {pf}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Current Features List */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 120, overflowY: 'auto', padding: 4, background: '#F8FAFC', borderRadius: 8, border: '1px solid #F1F5F9' }}>
+                {/* Features List */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 110, overflowY: 'auto' }}>
                   {features.map(f => (
                     <span
                       key={f}
                       style={{
                         fontSize: 12,
                         fontWeight: 600,
-                        background: '#FFFFFF',
-                        border: '1px solid #E2E8F0',
+                        background: '#F1F5F9',
                         color: '#334155',
-                        padding: '4px 8px',
+                        padding: '3px 8px',
                         borderRadius: 6,
                         display: 'flex',
                         alignItems: 'center',
@@ -802,24 +652,24 @@ export default function PackagesPage() {
                     </span>
                   ))}
                   {features.length === 0 && (
-                    <span style={{ fontSize: 12, color: '#94A3B8', padding: '4px 8px' }}>No features added yet.</span>
+                    <span style={{ fontSize: 12, color: '#94A3B8', padding: '4px 0' }}>No features added yet.</span>
                   )}
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 6 }}>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
                   style={{
-                    height: 38,
-                    padding: '0 16px',
+                    height: 36,
+                    padding: '0 14px',
                     borderRadius: 8,
                     border: '1px solid #CBD5E1',
                     background: '#FFFFFF',
                     color: '#64748B',
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: 700,
                     cursor: 'pointer',
                   }}
@@ -830,18 +680,18 @@ export default function PackagesPage() {
                   type="button"
                   onClick={handleSavePlan}
                   style={{
-                    height: 38,
-                    padding: '0 20px',
+                    height: 36,
+                    padding: '0 18px',
                     borderRadius: 8,
                     border: 'none',
                     background: '#1B2B68',
                     color: '#FFFFFF',
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: 700,
                     cursor: 'pointer',
                   }}
                 >
-                  Save Plan
+                  Save
                 </button>
               </div>
             </div>
