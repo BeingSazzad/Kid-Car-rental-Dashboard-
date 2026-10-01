@@ -196,38 +196,115 @@ const RoleChip = ({ role }: { role: string }) => {
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
+
+  // Detect whether this dataset represents counts (e.g. User Growth) or currency (Revenue, Earnings)
+  const isCount = payload.some((p: any) =>
+    p.dataKey === 'parents' || p.dataKey === 'providers' || (p.name && p.name.toLowerCase().includes('user'))
+  );
+
+  // Compute total if more than 1 item in payload
+  const total = payload.reduce((sum: number, p: any) => {
+    const val = typeof p.value === 'number' ? p.value : parseFloat(p.value) || 0;
+    return sum + val;
+  }, 0);
+
   return (
-    <div style={{
-      background: '#1A1D24',
-      borderRadius: 12,
-      padding: '12px 16px',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
-      minWidth: 180,
-      border: '1px solid rgba(255,255,255,0.08)',
-    }}>
-      <p style={{
-        fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.45)',
-        marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em',
-      }}>{label}</p>
-      {payload.map((p: any) => (
-        <div key={p.name} style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: 16, marginBottom: 6,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <div style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: p.fill || p.stroke, flexShrink: 0,
-            }} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.75)' }}>
-              {p.name}
-            </span>
-          </div>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>
-            ${typeof p.value === 'number' ? p.value.toLocaleString() : p.value}
+    <div
+      style={{
+        background: '#FFFFFF',
+        borderRadius: 10,
+        padding: '10px 14px',
+        boxShadow: '0 10px 25px -5px rgba(27, 43, 104, 0.12), 0 8px 10px -6px rgba(27, 43, 104, 0.08), 0 0 0 1px #E2E8F0',
+        minWidth: 180,
+        border: '1px solid #E2E8F0',
+        pointerEvents: 'none',
+      }}
+    >
+      {label && (
+        <div
+          style={{
+            fontSize: 12,
+            fontWeight: 800,
+            color: '#1B2B68',
+            marginBottom: 8,
+            paddingBottom: 6,
+            borderBottom: '1px solid #F1F5F9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>{label}</span>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              color: '#64748B',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+            }}
+          >
+            {isCount ? 'Active Users' : 'Revenue'}
           </span>
         </div>
-      ))}
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {payload.map((p: any) => {
+          const color = p.color || p.fill || p.stroke || '#1B2B68';
+          const val = typeof p.value === 'number' ? p.value : parseFloat(p.value) || 0;
+          const formattedVal = isCount ? `${val.toLocaleString()} users` : `$${val.toLocaleString()}`;
+
+          return (
+            <div
+              key={p.name || p.dataKey}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 16,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: color,
+                    flexShrink: 0,
+                    boxShadow: `0 0 0 2px ${color}25`,
+                  }}
+                />
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>
+                  {p.name || p.dataKey}
+                </span>
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 800, color: '#0F172A' }}>
+                {formattedVal}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {payload.length > 1 && (
+        <div
+          style={{
+            marginTop: 8,
+            paddingTop: 6,
+            borderTop: '1px dashed #CBD5E1',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B' }}>Total</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: '#1B2B68' }}>
+            {isCount ? `${total.toLocaleString()} users` : `$${total.toLocaleString()}`}
+          </span>
+        </div>
+      )}
     </div>
   );
 };
@@ -296,7 +373,7 @@ export default function OverviewPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(27, 43, 104, 0.04)', radius: 4 }} />
               <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 10 }} />
               <Bar dataKey="parent" name="Parents" fill="#1B2B68" radius={[4, 4, 0, 0]} />
               <Bar dataKey="driver" name="Drivers" fill="#F2600C" radius={[4, 4, 0, 0]} />
@@ -329,7 +406,7 @@ export default function OverviewPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v.toLocaleString()}`} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#1A1D24', fontWeight: 600 }} axisLine={false} tickLine={false} width={110} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: '#F8FAFC' }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(27, 43, 104, 0.04)' }} />
               <HBar dataKey="amount" name="Earnings" fill="#1B2B68" radius={[0, 5, 5, 0]} />
             </HBarChart>
           </ResponsiveContainer>
