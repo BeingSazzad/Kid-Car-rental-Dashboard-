@@ -1,11 +1,10 @@
-﻿import { NavLink, useLocation } from 'react-router-dom';
+﻿import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import {
   LayoutDashboard, Users, MapPin, CreditCard,
-  ShieldCheck, Gift, Bell, FileText,
-  Package, Settings, ChevronRight
+  ShieldCheck, Gift, Megaphone, FileText,
+  Package, LifeBuoy, Settings, ChevronRight
 } from 'lucide-react';
-import clsx from 'clsx';
 
 const NAV = [
   { label: 'Overview', icon: LayoutDashboard, to: ROUTES.OVERVIEW },
@@ -14,94 +13,163 @@ const NAV = [
   { label: 'Payments', icon: CreditCard, to: ROUTES.PAYMENTS },
   { label: 'KYC Queue', icon: ShieldCheck, to: ROUTES.KYC, badge: 4 },
   { label: 'Referrals', icon: Gift, to: ROUTES.REFERRALS },
-  { label: 'Notifications', icon: Bell, to: ROUTES.NOTIFICATIONS },
+  { label: 'Push Broadcasts', icon: Megaphone, to: ROUTES.NOTIFICATIONS },
   { label: 'Content (CMS)', icon: FileText, to: ROUTES.CMS },
   { label: 'Packages', icon: Package, to: ROUTES.PACKAGES },
+  { label: 'Support Tickets', icon: LifeBuoy, to: ROUTES.SUPPORT, badge: 2 },
   { label: 'Settings', icon: Settings, to: ROUTES.SETTINGS },
 ];
 
 export default function Sidebar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   return (
-    <aside
-      style={{ width: 240, minWidth: 240, background: '#1B2B68', fontFamily: 'Manrope, sans-serif' }}
-      className="h-screen flex flex-col fixed left-0 top-0 z-50 select-none"
-    >
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-        <div
-          style={{ width: 36, height: 36, background: '#F2600C', borderRadius: 10 }}
-          className="flex items-center justify-center flex-shrink-0"
-        >
-          <span style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>H</span>
-        </div>
-        <div>
-          <p style={{ fontSize: 14, fontWeight: 800, color: '#ffffff', lineHeight: 1.2 }}>Home2School</p>
-          <p style={{ fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.5)' }}>Admin Panel</p>
+    <aside style={{
+      width: 240,
+      minWidth: 240,
+      background: '#FFFFFF',
+      borderRight: '1px solid #E2E8F0',
+      fontFamily: 'Manrope, sans-serif',
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      zIndex: 50,
+    }}>
+      {/* ── Logo area ── */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        padding: '16px 18px',
+        borderBottom: '1px solid #F1F5F9',
+      }}>
+        {/* Official Home2School Emblem Logo */}
+        <img
+          src="/logo.png"
+          alt="Home2School logo"
+          style={{
+            width: 40,
+            height: 40,
+            objectFit: 'contain',
+            flexShrink: 0,
+          }}
+        />
+        {/* Wordmark */}
+        <div style={{ lineHeight: 1 }}>
+          <p style={{
+            fontSize: 14,
+            fontWeight: 800,
+            color: '#1B2B68',
+            letterSpacing: '-0.01em',
+          }}>
+            Home<span style={{ color: '#F2600C' }}>2</span>School
+          </p>
+          <p style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#94A3B8',
+            marginTop: 2,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}>Admin Panel</p>
         </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3">
-        <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em' }} className="px-3 mb-2 uppercase">Menu</p>
+      {/* ── Nav ── */}
+      <nav style={{ flex: 1, overflowY: 'auto', padding: '14px 10px' }}>
+        <p style={{
+          fontSize: 12,
+          fontWeight: 700,
+          color: '#94A3B8',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          padding: '0 10px',
+          marginBottom: 8,
+        }}>Menu</p>
+
         {NAV.map(({ label, icon: Icon, to, badge }) => {
           const isActive = to === '/' ? pathname === '/' : pathname.startsWith(to);
           return (
             <NavLink
               key={to}
               to={to}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 group relative transition-all duration-150"
               style={{
-                background: isActive ? 'rgba(255,255,255,0.12)' : 'transparent',
-                borderLeft: isActive ? '3px solid #F2600C' : '3px solid transparent',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '9px 12px',
+                borderRadius: 10,
+                marginBottom: 2,
+                textDecoration: 'none',
+                background: isActive ? '#1B2B68' : 'transparent',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F0F3FA';
+              }}
+              onMouseLeave={e => {
+                if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
               }}
             >
-              <Icon
-                size={18}
-                strokeWidth={2}
-                style={{ color: isActive ? '#ffffff' : 'rgba(255,255,255,0.55)', flexShrink: 0 }}
-              />
-              <span
-                style={{
-                  fontSize: 14,
-                  fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#ffffff' : 'rgba(255,255,255,0.65)',
-                  flex: 1,
-                }}
-              >
-                {label}
-              </span>
+              <Icon size={16} strokeWidth={2} style={{ color: isActive ? '#ffffff' : '#64748B', flexShrink: 0 }} />
+              <span style={{
+                fontSize: 14,
+                fontWeight: isActive ? 700 : 500,
+                color: isActive ? '#ffffff' : '#475569',
+                flex: 1,
+              }}>{label}</span>
               {badge && (
-                <span
-                  style={{
-                    fontSize: 12, fontWeight: 700, color: '#fff',
-                    background: '#F2600C', borderRadius: 99,
-                    padding: '1px 7px', lineHeight: '20px',
-                  }}
-                >
-                  {badge}
-                </span>
+                <span style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: '#fff',
+                  background: '#F2600C',
+                  borderRadius: 99,
+                  padding: '2px 7px',
+                  lineHeight: '18px',
+                }}>{badge}</span>
               )}
             </NavLink>
           );
         })}
       </nav>
 
-      {/* Admin footer */}
-      <div className="px-3 py-4 border-t border-white/10">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-white/8 transition-colors">
-          <div
-            style={{ width: 34, height: 34, borderRadius: '50%', background: '#F2600C', flexShrink: 0 }}
-            className="flex items-center justify-center"
-          >
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>SA</span>
+      {/* ── Admin footer ── */}
+      <div style={{ padding: '12px 10px', borderTop: '1px solid #F1F5F9' }}>
+        <div
+          onClick={() => navigate('/settings')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '10px 12px',
+            borderRadius: 10,
+            cursor: 'pointer',
+            background: '#F8FAFC',
+            border: '1px solid #F1F5F9',
+          }}
+        >
+          <div style={{
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            background: '#1B2B68',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <span style={{ fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: '0.02em' }}>SA</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }} className="truncate">Super Admin</p>
-            <p style={{ fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)' }} className="truncate">admin@home2school.ca</p>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#1A1D24', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Super Admin</p>
+            <p style={{ fontSize: 12, fontWeight: 500, color: '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>admin@home2school.ca</p>
           </div>
-          <ChevronRight size={14} style={{ color: 'rgba(255,255,255,0.35)', flexShrink: 0 }} />
+          <ChevronRight size={14} style={{ color: '#CBD5E1', flexShrink: 0 }} />
         </div>
       </div>
     </aside>

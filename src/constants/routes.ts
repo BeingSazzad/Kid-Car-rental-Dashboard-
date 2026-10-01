@@ -12,6 +12,7 @@
   NOTIFICATIONS: '/notifications',
   CMS: '/cms',
   PACKAGES: '/packages',
+  SUPPORT: '/support',
   SETTINGS: '/settings',
   LOGIN: '/login',
 } as const;

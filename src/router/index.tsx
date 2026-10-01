@@ -1,4 +1,4 @@
-﻿import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import AdminLayout from '@/components/layout/AdminLayout';
 import OverviewPage from '@/pages/dashboard/OverviewPage';
@@ -10,10 +10,16 @@ import ReferralsPage from '@/pages/referrals/ReferralsPage';
 import NotificationsPage from '@/pages/notifications/NotificationsPage';
 import CMSPage from '@/pages/cms/CMSPage';
 import PackagesPage from '@/pages/packages/PackagesPage';
+import SupportPage from '@/pages/support/SupportPage';
 import SettingsPage from '@/pages/settings/SettingsPage';
+import LoginPage from '@/pages/auth/LoginPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
 export const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
   {
     path: '/',
     element: <AdminLayout />,
@@ -27,6 +33,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.NOTIFICATIONS.slice(1), element: <NotificationsPage /> },
       { path: ROUTES.CMS.slice(1), element: <CMSPage /> },
       { path: ROUTES.PACKAGES.slice(1), element: <PackagesPage /> },
+      { path: ROUTES.SUPPORT.slice(1), element: <SupportPage /> },
       { path: ROUTES.SETTINGS.slice(1), element: <SettingsPage /> },
     ],
   },

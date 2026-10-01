@@ -3,8 +3,7 @@
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   BarChart as HBarChart, Bar as HBar
 } from 'recharts';
-import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, AlertCircle, CheckCircle, Clock, ChevronRight } from 'lucide-react';
-import { RAGGauge } from '@/components/analytics/RAGGauge';
+import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
 
 /* ─── Mock Data ─── */
 const revenueData = [
@@ -49,7 +48,6 @@ const userComposition = [
   { name: 'Parents', value: 1248, color: '#1B2B68' },
   { name: 'Drivers', value: 142, color: '#F2600C' },
   { name: 'Walkers', value: 34, color: '#10B981' },
-  { name: 'Pending KYC', value: 4, color: '#F59E0B' },
 ];
 
 const recentUsers = [
@@ -80,7 +78,7 @@ const KPICard = ({ label, value, sub, trend, icon: Icon, accentColor }: {
       padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 12,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B' }}>{label}</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: '#64748B' }}>{label}</p>
         <div style={{
           width: 36, height: 36, borderRadius: 10,
           background: accentColor ? `${accentColor}14` : '#EEF1FB',
@@ -116,7 +114,7 @@ const SectionCard = ({ title, children, action }: { title: string; children: Rea
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '18px 22px', borderBottom: '1px solid #F1F5F9',
     }}>
-      <p style={{ fontSize: 15, fontWeight: 700, color: '#1A1D24' }}>{title}</p>
+      <p style={{ fontSize: 16, fontWeight: 700, color: '#1A1D24' }}>{title}</p>
       {action && (
         <button style={{ fontSize: 12, fontWeight: 600, color: '#1B2B68', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}>
           {action} <ChevronRight size={12} />
@@ -158,74 +156,75 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
-      background: '#1A1D24', borderRadius: 10, padding: '10px 14px',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+      background: '#1A1D24',
+      borderRadius: 12,
+      padding: '12px 16px',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
+      minWidth: 160,
+      border: '1px solid rgba(255,255,255,0.08)',
     }}>
-      <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>{label}</p>
+      <p style={{
+        fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.45)',
+        marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em',
+      }}>{label}</p>
       {payload.map((p: any) => (
-        <p key={p.name} style={{ fontSize: 13, fontWeight: 700, color: '#fff', lineHeight: 1.6 }}>
-          <span style={{ color: p.fill || p.stroke }}>{p.name}: </span>${p.value.toLocaleString()}
-        </p>
+        <div key={p.name} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 20, marginBottom: 6,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <div style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: p.fill || p.stroke, flexShrink: 0,
+            }} />
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.65)' }}>
+              {p.name}
+            </span>
+          </div>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#ffffff' }}>
+            ${p.value.toLocaleString()}
+          </span>
+        </div>
       ))}
     </div>
   );
 };
 
-/* ─── Alert Row ─── */
-const alerts = [
-  { icon: AlertCircle, color: '#EF4444', bg: '#FEF2F2', text: '2 KYC documents expiring in 7 days', action: 'Review' },
-  { icon: Clock, color: '#F59E0B', bg: '#FFFBEB', text: 'Trip #H2S-84920 is 12 min overdue', action: 'View Trip' },
-  { icon: CheckCircle, color: '#10B981', bg: '#ECFDF5', text: 'All morning routes completed successfully', action: null },
-];
-
 /* ─── Main Page ─── */
 export default function OverviewPage() {
   const totalUsers = userComposition.reduce((a, b) => a + b.value, 0);
+
+  const kpis = [
+    { label: 'Total Revenue (MTD)', value: '$11,400', sub: 'vs last month', trend: 18.4, icon: DollarSign, accentColor: '#1B2B68' },
+    { label: 'Active Users', value: '1,424', sub: 'vs last month', trend: 12.1, icon: Users, accentColor: '#F2600C' },
+    { label: 'Completed Trips', value: '3,842', sub: 'vs last month', trend: 9.6, icon: MapPin, accentColor: '#10B981' },
+    { label: 'Safety Incidents', value: '0', sub: 'Zero tolerance', trend: 0, icon: ShieldAlert, accentColor: '#6366F1' },
+  ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Page Header */}
       <div>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1A1D24', marginBottom: 2 }}>Overview</h1>
-        <p style={{ fontSize: 13, fontWeight: 500, color: '#64748B' }}>Thu, Oct 1 2026 · Morning Peak Active</p>
+        <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B' }}>Thu, Oct 1 2026 • Morning Peak Active</p>
       </div>
 
-      {/* Alert Strip */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {alerts.map((a, i) => (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: a.bg, border: `1px solid ${a.color}28`,
-            borderRadius: 10, padding: '10px 14px',
-          }}>
-            <a.icon size={15} style={{ color: a.color, flexShrink: 0 }} strokeWidth={2.5} />
-            <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1D24', flex: 1 }}>{a.text}</p>
-            {a.action && (
-              <button style={{ fontSize: 12, fontWeight: 700, color: a.color, background: 'none', border: 'none', cursor: 'pointer' }}>
-                {a.action}
-              </button>
-            )}
-          </div>
+      {/* KPI Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        {kpis.map((k, i) => (
+          <KPICard key={i} {...k} />
         ))}
       </div>
 
-      {/* KPI Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-        <KPICard label="Total Revenue (MTD)" value="$12,840" sub="vs last month" trend={8.4} icon={DollarSign} />
-        <KPICard label="Active Users" value="1,428" sub="this week +124" trend={5.2} icon={Users} accentColor="#3B82F6" />
-        <KPICard label="Live Trips Now" value="34" sub="morning peak" trend={12.1} icon={MapPin} accentColor="#F2600C" />
-        <KPICard label="Pending KYC" value="4" sub="need review" trend={-2} icon={ShieldAlert} accentColor="#F59E0B" />
-      </div>
-
-      {/* Charts Row 1: Revenue Column + User Growth Line */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <SectionCard title="Monthly Revenue">
+      {/* Charts Row 1: Revenue + User Growth */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
+        <SectionCard title="Revenue Breakdown">
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={revenueData} barSize={14} barGap={4}>
+            <BarChart data={revenueData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v/1000}k`} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: '#F8FAFC' }} />
+              <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
+              <Tooltip content={<CustomTooltip />} />
               <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 8 }} />
               <Bar dataKey="vehicle" name="Vehicle Ride" fill="#1B2B68" radius={[5, 5, 0, 0]} />
               <Bar dataKey="walkshare" name="WalkShare" fill="#F2600C" radius={[5, 5, 0, 0]} />
@@ -249,7 +248,7 @@ export default function OverviewPage() {
       </div>
 
       {/* Charts Row 2: Top Earners + Pie + RAG Gauge */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px 260px', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16 }}>
         {/* Top Earners Bar */}
         <SectionCard title="Top Earning Providers">
           <ResponsiveContainer width="100%" height={200}>
@@ -264,7 +263,7 @@ export default function OverviewPage() {
         </SectionCard>
 
         {/* Pie Chart */}
-        <SectionCard title="User Mix">
+        <SectionCard title="Users">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <div style={{ position: 'relative' }}>
               <PieChart width={150} height={150}>
@@ -291,10 +290,7 @@ export default function OverviewPage() {
           </div>
         </SectionCard>
 
-        {/* RAG Gauge */}
-        <SectionCard title="Platform Health">
-          <RAGGauge score={84} />
-        </SectionCard>
+
       </div>
 
       {/* Tables Row */}
@@ -312,7 +308,7 @@ export default function OverviewPage() {
             <tbody>
               {recentUsers.map((u, i) => (
                 <tr key={i} style={{ borderTop: '1px solid #F8FAFC' }}>
-                  <td style={{ padding: '10px 0', fontSize: 13, fontWeight: 600, color: '#1A1D24' }}>{u.name}</td>
+                  <td style={{ padding: '10px 0', fontSize: 14, fontWeight: 600, color: '#1A1D24' }}>{u.name}</td>
                   <td style={{ padding: '10px 0' }}><RoleChip role={u.role} /></td>
                   <td style={{ padding: '10px 0', fontSize: 12, fontWeight: 500, color: '#64748B' }}>{u.date}</td>
                   <td style={{ padding: '10px 0' }}><StatusChip status={u.status} /></td>
@@ -335,9 +331,9 @@ export default function OverviewPage() {
             <tbody>
               {recentTx.map((t, i) => (
                 <tr key={i} style={{ borderTop: '1px solid #F8FAFC' }}>
-                  <td style={{ padding: '10px 0', fontSize: 13, fontWeight: 600, color: '#1A1D24' }}>{t.user}</td>
+                  <td style={{ padding: '10px 0', fontSize: 14, fontWeight: 600, color: '#1A1D24' }}>{t.user}</td>
                   <td style={{ padding: '10px 0', fontSize: 12, fontWeight: 500, color: '#64748B' }}>{t.package}</td>
-                  <td style={{ padding: '10px 0', fontSize: 13, fontWeight: 700, color: '#1A1D24' }}>{t.amount}</td>
+                  <td style={{ padding: '10px 0', fontSize: 14, fontWeight: 700, color: '#1A1D24' }}>{t.amount}</td>
                   <td style={{ padding: '10px 0' }}><StatusChip status={t.status} /></td>
                 </tr>
               ))}
