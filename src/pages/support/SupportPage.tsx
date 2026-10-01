@@ -187,6 +187,36 @@ const categoryBadge = {
 };
 
 export default function SupportPage() {
+  const [refundIssued, setRefundIssued] = useState(false);
+
+  const handleIssueRefund = (ticket: Ticket) => {
+    const refundMsg = {
+      sender: 'Super Admin (Billing & Safety)',
+      role: 'admin' as const,
+      time: 'Just now',
+      text: `⚡ Automated Action: A full courtesy refund of $12.50 CAD has been credited back to ${ticket.user}'s payment method for commute incident ${ticket.tripId || ticket.id}. Our Safety Operations team has flagged the assigned provider.`,
+    };
+    setTickets(prev =>
+      prev.map(t =>
+        t.id === ticket.id
+          ? {
+              ...t,
+              status: 'Resolved',
+              messages: [...t.messages, refundMsg],
+            }
+          : t
+      )
+    );
+    if (selectedTicket && selectedTicket.id === ticket.id) {
+      setSelectedTicket({
+        ...selectedTicket,
+        status: 'Resolved',
+        messages: [...selectedTicket.messages, refundMsg],
+      });
+    }
+    setRefundIssued(true);
+    setTimeout(() => setRefundIssued(false), 3000);
+  };
   const [tickets, setTickets] = useState<Ticket[]>(INITIAL_TICKETS);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [activeTab, setActiveTab] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
@@ -800,8 +830,30 @@ export default function SupportPage() {
               </div>
 
               {selectedTicket.tripId && (
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#1B2B68', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span>Ride: {selectedTicket.tripId}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1B2B68', background: '#EEF2FF', padding: '4px 10px', borderRadius: 6 }}>
+                    Ride: {selectedTicket.tripId}
+                  </div>
+                  <button
+                    onClick={() => handleIssueRefund(selectedTicket)}
+                    disabled={selectedTicket.status === 'Resolved'}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: selectedTicket.status === 'Resolved' ? '#F1F5F9' : '#ECFDF5',
+                      border: selectedTicket.status === 'Resolved' ? '1px solid #E2E8F0' : '1px solid #A7F3D0',
+                      color: selectedTicket.status === 'Resolved' ? '#94A3B8' : '#059669',
+                      padding: '4px 10px',
+                      borderRadius: 6,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: selectedTicket.status === 'Resolved' ? 'default' : 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <span>{refundIssued ? '✓ Refund Credited ($12.50 CAD)' : '⚡ Issue $12.50 Trip Refund'}</span>
+                  </button>
                 </div>
               )}
             </div>

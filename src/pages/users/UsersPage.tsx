@@ -498,7 +498,7 @@ export default function UsersPage() {
                 style={{ padding: '12px 18px', fontSize: 12, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', cursor: 'pointer' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span>Volume</span>
+                  <span>Financial Activity</span>
                   <ArrowUpDown size={12} />
                 </div>
               </th>
@@ -614,9 +614,24 @@ export default function UsersPage() {
                     {u.trips}
                   </td>
 
-                  {/* Volume */}
-                  <td style={{ padding: '14px 18px', fontSize: 14, fontWeight: 800, color: '#1B2B68' }}>
-                    {u.spent}
+                  {/* Financial Activity (Role-Aware) */}
+                  <td style={{ padding: '14px 18px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 800,
+                          color: u.roles.includes('Driver') || u.roles.includes('Walker') ? '#059669' : '#1B2B68',
+                        }}
+                      >
+                        {u.spent}
+                      </span>
+                      <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8' }}>
+                        {u.roles.includes('Driver') || u.roles.includes('Walker')
+                          ? (u.roles.includes('Parent') ? 'Earned & Spent' : 'Total Earned')
+                          : 'Total Spent'}
+                      </span>
+                    </div>
                   </td>
 
                   {/* Status */}

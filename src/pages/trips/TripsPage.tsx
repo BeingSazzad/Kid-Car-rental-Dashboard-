@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, MapPin, Clock, Download, X, CheckCircle2 } from 'lucide-react';
+import { Search, MapPin, Clock, Download, X, CheckCircle2, ShieldAlert, Phone } from 'lucide-react';
 
 interface TripItem {
   id: string;
@@ -165,6 +165,8 @@ export default function TripsPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>('All');
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<'All' | 'Vehicle' | 'WalkShare'>('All');
+  const [shiftFilter, setShiftFilter] = useState<'All' | 'Morning' | 'Afternoon'>('All');
+  const [emergencyTrip, setEmergencyTrip] = useState<TripItem | null>(null);
   const [selectedTrip, setSelectedTrip] = useState<TripItem | null>(null);
   const [exportNotice, setExportNotice] = useState(false);
 
@@ -178,6 +180,13 @@ export default function TripsPage() {
           : t.status === tab;
 
       const matchType = typeFilter === 'All' || t.type === typeFilter;
+      const isMorning = t.time.includes('AM');
+      const matchShift =
+        shiftFilter === 'All'
+          ? true
+          : shiftFilter === 'Morning'
+          ? isMorning
+          : !isMorning;
 
       const q = search.trim().toLowerCase();
       const matchSearch =
@@ -187,9 +196,9 @@ export default function TripsPage() {
         t.provider.toLowerCase().includes(q) ||
         t.children.toLowerCase().includes(q);
 
-      return matchTab && matchType && matchSearch;
+      return matchTab && matchType && matchShift && matchSearch;
     });
-  }, [trips, tab, typeFilter, search]);
+  }, [trips, tab, typeFilter, shiftFilter, search]);
 
   const handleExportCSV = () => {
     const headers = ['Trip ID,Children,Provider,Parent,Route,Time,Type,Amount,Status'];
@@ -289,6 +298,34 @@ export default function TripsPage() {
                   }}
                 >
                   {t}
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ width: 1, height: 24, background: '#E2E8F0' }} />
+
+          {/* School Shift Filter (Morning Inbound vs Afternoon Outbound) */}
+          <div style={{ display: 'flex', background: '#F8FAFC', padding: 3, borderRadius: 8, border: '1px solid #E2E8F0', gap: 2 }}>
+            {(['All', 'Morning', 'Afternoon'] as const).map(s => {
+              const active = shiftFilter === s;
+              return (
+                <button
+                  key={s}
+                  onClick={() => setShiftFilter(s)}
+                  style={{
+                    border: 'none',
+                    padding: '5px 10px',
+                    borderRadius: 6,
+                    fontSize: 11,
+                    fontWeight: active ? 700 : 600,
+                    cursor: 'pointer',
+                    background: active ? '#1B2B68' : 'transparent',
+                    color: active ? '#FFFFFF' : '#64748B',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {s === 'All' ? 'All Shifts' : s === 'Morning' ? '🌅 Morning Bell' : '🌆 Afternoon Drop'}
                 </button>
               );
             })}
@@ -496,6 +533,167 @@ export default function TripsPage() {
       </div>
 
       {/* ── Trip Details Drawer/Modal ── */}
+      {/* ── Dedicated Instant Emergency Sheet Modal ── */}
+      {emergencyTrip && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(3px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 16,
+          }}
+          onClick={() => setEmergencyTrip(null)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#FFFFFF',
+              borderRadius: 16,
+              maxWidth: 520,
+              width: '100%',
+              padding: 24,
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 18,
+              border: '2px solid #F87171',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #FEE2E2', paddingBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#FEF2F2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ShieldAlert size={22} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 800, color: '#991B1B', margin: 0 }}>
+                    Emergency Transit & Safety Sheet
+                  </h3>
+                  <span style={{ fontSize: 12, color: '#64748B' }}>Trip ID: {emergencyTrip.id} • {emergencyTrip.time}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setEmergencyTrip(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Child Passenger Information */}
+            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: '12px 16px' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Child Passengers</span>
+              <p style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', margin: '4px 0 2px' }}>{emergencyTrip.children}</p>
+              <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>Route: {emergencyTrip.route}</p>
+              <div style={{ marginTop: 8, background: '#FEF3C7', padding: '6px 10px', borderRadius: 6, fontSize: 11, color: '#92400E', fontWeight: 600 }}>
+                ⚠️ Safety Protocol: EpiPen check required • Booster seat secured per Ontario HTA 613
+              </div>
+            </div>
+
+            {/* Direct Contacts Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, padding: 12, background: '#FFFFFF' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Parent / Guardian</span>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', margin: '4px 0 2px' }}>{emergencyTrip.parent}</p>
+                <a
+                  href={`tel:${emergencyTrip.parentPhone}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: '#1B2B68',
+                    textDecoration: 'none',
+                    marginTop: 4,
+                    background: '#EEF2FF',
+                    padding: '4px 8px',
+                    borderRadius: 6,
+                  }}
+                >
+                  <Phone size={12} /> {emergencyTrip.parentPhone}
+                </a>
+              </div>
+
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, padding: 12, background: '#FFFFFF' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Assigned Provider</span>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#0F172A', margin: '4px 0 2px' }}>{emergencyTrip.provider}</p>
+                <a
+                  href={`tel:${emergencyTrip.providerPhone}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: '#059669',
+                    textDecoration: 'none',
+                    marginTop: 4,
+                    background: '#ECFDF5',
+                    padding: '4px 8px',
+                    borderRadius: 6,
+                  }}
+                >
+                  <Phone size={12} /> {emergencyTrip.providerPhone}
+                </a>
+              </div>
+            </div>
+
+            {/* Vehicle or WalkShare Detail */}
+            <div style={{ fontSize: 12, color: '#475569', background: '#F1F5F9', padding: '10px 14px', borderRadius: 8 }}>
+              <strong>Transit Asset:</strong> {emergencyTrip.vehicle}
+            </div>
+
+            {/* Emergency Action Buttons */}
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <button
+                onClick={() => {
+                  alert('Emergency SMS Alert dispatched to Parent, Driver, and Safety Response Desk.');
+                  setEmergencyTrip(null);
+                }}
+                style={{
+                  flex: 1,
+                  background: '#DC2626',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 14px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <ShieldAlert size={15} />
+                <span>Send Emergency SMS Broadcast</span>
+              </button>
+              <button
+                onClick={() => setEmergencyTrip(null)}
+                style={{
+                  border: '1px solid #CBD5E1',
+                  background: '#FFFFFF',
+                  color: '#475569',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {selectedTrip && (
         <div
           style={{
