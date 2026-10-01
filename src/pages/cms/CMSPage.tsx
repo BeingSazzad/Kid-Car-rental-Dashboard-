@@ -5,7 +5,7 @@ import { useState } from 'react';
 import {
   Plus, Trash2, Edit2, X, ChevronDown, ChevronUp,
   GripVertical, Check, ArrowUp, ArrowDown, Copy, Shield, FileText, HelpCircle, Info, Search, Phone, Mail, AlertTriangle
-, Upload} from 'lucide-react';
+, Upload, Smartphone } from 'lucide-react';
 import { RichTextEditor } from './RichTextEditor';
 
 /* — Types — */
@@ -109,6 +109,7 @@ const PAGE_TABS = [
   { key: 'tos', label: 'Terms & Conditions', icon: FileText },
   { key: 'about', label: 'About Us', icon: Info },
   { key: 'emergency', label: 'Emergency Contacts', icon: AlertTriangle },
+  { key: 'branding', label: 'App Screens & Logo', icon: Smartphone },
 ];
 
 /* — Helper UI components — */
@@ -711,9 +712,7 @@ function FAQManager() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>Help &amp; FAQ</h2>
-          <span style={{ fontSize: 12, fontWeight: 700, background: '#EEF2F9', color: '#1B2B68', padding: '3px 9px', borderRadius: 6 }}>
-            {items.length} Questions
-          </span>
+          
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <SaveIndicator show={saved} />

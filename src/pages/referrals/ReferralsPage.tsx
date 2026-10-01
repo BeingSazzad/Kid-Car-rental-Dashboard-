@@ -64,9 +64,9 @@ export default function ReferralsPage() {
   });
 
   const exportCSV = () => {
-    const headers = ['Referral ID,Referrer,Role,Referred User,Date Joined,Status,Reward,Channel'];
+    const headers = ['Referral ID,Referrer,Role,Referred User,Date Joined,Status,Reward'];
     const rows = REF_LOG.map(r =>
-      `"${r.id}","${r.referrer}","${r.referrerRole}","${r.referred}","${r.joined}","${r.status}","$${cfg.bonusAmount}","${r.channel}"`
+      `"${r.id}","${r.referrer}","${r.referrerRole}","${r.referred}","${r.joined}","${r.status}","$${cfg.bonusAmount}"`
     );
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
     const encodedUri = encodeURI(csvContent);
