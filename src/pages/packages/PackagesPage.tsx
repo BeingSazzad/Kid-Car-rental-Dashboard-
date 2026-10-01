@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Check, X, MoreHorizontal, Users, CreditCard, ShieldCheck } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, MoreHorizontal, Users } from 'lucide-react';
 
 export interface Plan {
   id: number;
@@ -173,9 +173,7 @@ export default function PackagesPage() {
     setModalOpen(false);
   };
 
-  const totalSubscribers = plans.reduce((acc, p) => acc + (p.activeSubscribers || 0), 0);
-
-  return (
+    return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, fontFamily: 'Manrope, sans-serif' }}>
       {/* ── Page Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
@@ -223,39 +221,6 @@ export default function PackagesPage() {
         >
           <Plus size={16} /> Add Plan
         </button>
-      </div>
-
-      {/* ── KPI Summary Cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 10, background: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1B2B68' }}>
-            <Users size={22} />
-          </div>
-          <div>
-            <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', margin: 0 }}>Total Active Subscribers</p>
-            <p style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', margin: '2px 0 0' }}>{totalSubscribers.toLocaleString()} Parents</p>
-          </div>
-        </div>
-
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 10, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
-            <CreditCard size={22} />
-          </div>
-          <div>
-            <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', margin: 0 }}>Monthly Recurring (MRR)</p>
-            <p style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', margin: '2px 0 0' }}>$31,290 CAD</p>
-          </div>
-        </div>
-
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 10, background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#B45309' }}>
-            <ShieldCheck size={22} />
-          </div>
-          <div>
-            <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', margin: 0 }}>Most Subscribed Plan</p>
-            <p style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', margin: '2px 0 0' }}>Monthly Commute Pass</p>
-          </div>
-        </div>
       </div>
 
       {/* ── 3 Plans Grid (Clean minimalist cards with NO bottom redundant edit button) ── */}

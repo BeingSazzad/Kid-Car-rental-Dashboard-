@@ -3,6 +3,7 @@ import { ROUTES } from '@/constants/routes';
 import AdminLayout from '@/components/layout/AdminLayout';
 import OverviewPage from '@/pages/dashboard/OverviewPage';
 import UsersPage from '@/pages/users/UsersPage';
+import UserDetailPage from '@/pages/users/UserDetailPage';
 import TripsPage from '@/pages/trips/TripsPage';
 import PaymentsPage from '@/pages/payments/PaymentsPage';
 import KYCPage from '@/pages/kyc/KYCPage';
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <OverviewPage /> },
       { path: ROUTES.USERS.slice(1), element: <UsersPage /> },
+      { path: ROUTES.USER_DETAIL.slice(1), element: <UserDetailPage /> },
       { path: ROUTES.TRIPS.slice(1), element: <TripsPage /> },
       { path: ROUTES.PAYMENTS.slice(1), element: <PaymentsPage /> },
       { path: ROUTES.KYC.slice(1), element: <KYCPage /> },

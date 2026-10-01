@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import {
-  Search, ArrowUpDown, RefreshCw, X, Phone, Car, Mail, CheckCircle2, ChevronDown
+  Search, ArrowUpDown, RefreshCw, ChevronDown
 } from 'lucide-react';
 
+import { INITIAL_USERS } from '@/constants/mockUsers';
 export type UserRole = 'Parent' | 'Driver' | 'Walker';
 
 export interface UserItem {
@@ -192,14 +194,14 @@ const statusColors: Record<string, { bg: string; color: string }> = {
 };
 
 export default function UsersPage() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserItem[]>(INITIAL_USERS);
   const [search, setSearch] = useState('');
   const [roleTab, setRoleTab] = useState<'All' | 'Parents' | 'Drivers' | 'Walkers' | 'Multi-Role'>('All');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Pending' | 'Banned'>('All');
   const [sortBy, setSortBy] = useState<'joined' | 'name' | 'trips' | 'spent'>('joined');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
-
+  
   // Role Tab Counts
   const counts = useMemo(() => {
     return {
@@ -269,9 +271,6 @@ export default function UsersPage() {
       }
       return u;
     }));
-    if (selectedUser?.id === id) {
-      setSelectedUser(prev => prev ? { ...prev, status: prev.status === 'Banned' ? 'Active' : 'Banned' } : null);
-    }
   };
 
   return (
@@ -518,7 +517,7 @@ export default function UsersPage() {
               filteredUsers.map(u => (
                 <tr
                   key={u.id}
-                  onClick={() => setSelectedUser(u)}
+                  onClick={() => navigate(`/users/${u.id}`)}
                   style={{
                     borderBottom: '1px solid #F1F5F9',
                     cursor: 'pointer',
@@ -642,7 +641,7 @@ export default function UsersPage() {
                       <button
                         onClick={e => {
                           e.stopPropagation();
-                          setSelectedUser(u);
+                          navigate(`/users/${u.id}`);
                         }}
                         style={{
                           padding: '6px 12px',
@@ -682,330 +681,6 @@ export default function UsersPage() {
         </table>
       </div>
 
-      {/* ── User Details Modal (Drawer) ── */}
-      {selectedUser && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 23, 42, 0.45)',
-            backdropFilter: 'blur(3px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 999,
-            padding: 16,
-          }}
-          onClick={() => setSelectedUser(null)}
-        >
-          <div
-            style={{
-              background: '#FFFFFF',
-              borderRadius: 18,
-              width: 520,
-              maxWidth: '100%',
-              padding: 24,
-              boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-              <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: '50%',
-                    background: '#1B2B68',
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 16,
-                    fontWeight: 800,
-                  }}
-                >
-                  {selectedUser.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div>
-                  <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                    {selectedUser.name}
-                  </h2>
-                  <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
-                    User ID: {selectedUser.id} • Joined {selectedUser.joined}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setSelectedUser(null)}
-                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* User Roles & Modes Summary */}
-            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <p style={{ fontSize: 12, fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', margin: 0, letterSpacing: '0.04em' }}>
-                  Registered Roles & Modes
-                </p>
-                <span style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: '#1B2B68',
-                  background: '#EEF2FF',
-                  border: '1px solid #E0E7FF',
-                  padding: '3px 8px',
-                  borderRadius: 99,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-                  Active Mode: {selectedUser.activeRole}
-                </span>
-              </div>
-
-              {/* 3 Roles Detailed Summary */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {/* 1. Parent Mode */}
-                {(() => {
-                  const isEnrolled = selectedUser.roles.includes('Parent');
-                  return (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 12px',
-                      borderRadius: 8,
-                      background: isEnrolled ? '#FFFFFF' : 'rgba(241, 245, 249, 0.6)',
-                      border: isEnrolled ? '1px solid #CBD5E1' : '1px dashed #E2E8F0',
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: 6,
-                          background: isEnrolled ? '#EEF2FF' : '#F1F5F9',
-                          color: isEnrolled ? '#1B2B68' : '#94A3B8',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 12,
-                          fontWeight: 800,
-                        }}>
-                          P
-                        </div>
-                        <div>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: isEnrolled ? '#1E293B' : '#94A3B8', margin: 0 }}>
-                            Parent Mode
-                          </p>
-                          <p style={{ fontSize: 10, color: '#64748B', margin: '1px 0 0' }}>
-                            {isEnrolled ? (selectedUser.details?.vehicleOrChildren?.includes('Child') ? selectedUser.details.vehicleOrChildren : 'Registered Guardian • Children Onboarded') : 'Not registered as a parent'}
-                          </p>
-                        </div>
-                      </div>
-                      <span style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: 6,
-                        background: isEnrolled ? '#ECFDF5' : '#F1F5F9',
-                        color: isEnrolled ? '#059669' : '#94A3B8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}>
-                        {isEnrolled ? <><CheckCircle2 size={10} /> Enrolled</> : 'Inactive'}
-                      </span>
-                    </div>
-                  );
-                })()}
-
-                {/* 2. Driver Mode */}
-                {(() => {
-                  const isEnrolled = selectedUser.roles.includes('Driver');
-                  return (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 12px',
-                      borderRadius: 8,
-                      background: isEnrolled ? '#FFFFFF' : 'rgba(241, 245, 249, 0.6)',
-                      border: isEnrolled ? '1px solid #CBD5E1' : '1px dashed #E2E8F0',
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: 6,
-                          background: isEnrolled ? '#EEF2FF' : '#F1F5F9',
-                          color: isEnrolled ? '#1B2B68' : '#94A3B8',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 12,
-                          fontWeight: 800,
-                        }}>
-                          D
-                        </div>
-                        <div>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: isEnrolled ? '#1E293B' : '#94A3B8', margin: 0 }}>
-                            Driver Mode
-                          </p>
-                          <p style={{ fontSize: 10, color: '#64748B', margin: '1px 0 0' }}>
-                            {isEnrolled ? (selectedUser.details?.vehicleOrChildren?.includes('Toyota') || selectedUser.details?.vehicleOrChildren?.includes('Honda') || selectedUser.details?.vehicleOrChildren?.includes('Plate') ? selectedUser.details.vehicleOrChildren : 'Certified Vehicle • Commercial Transit Insured') : 'Not registered as a driver'}
-                          </p>
-                        </div>
-                      </div>
-                      <span style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: 6,
-                        background: isEnrolled ? '#ECFDF5' : '#F1F5F9',
-                        color: isEnrolled ? '#059669' : '#94A3B8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}>
-                        {isEnrolled ? <><CheckCircle2 size={10} /> Certified</> : 'Inactive'}
-                      </span>
-                    </div>
-                  );
-                })()}
-
-                {/* 3. Walker Mode */}
-                {(() => {
-                  const isEnrolled = selectedUser.roles.includes('Walker');
-                  return (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 12px',
-                      borderRadius: 8,
-                      background: isEnrolled ? '#FFFFFF' : 'rgba(241, 245, 249, 0.6)',
-                      border: isEnrolled ? '1px solid #CBD5E1' : '1px dashed #E2E8F0',
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: 6,
-                          background: isEnrolled ? '#EEF2FF' : '#F1F5F9',
-                          color: isEnrolled ? '#1B2B68' : '#94A3B8',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 12,
-                          fontWeight: 800,
-                        }}>
-                          W
-                        </div>
-                        <div>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: isEnrolled ? '#1E293B' : '#94A3B8', margin: 0 }}>
-                            Walker Mode
-                          </p>
-                          <p style={{ fontSize: 10, color: '#64748B', margin: '1px 0 0' }}>
-                            {isEnrolled ? (selectedUser.details?.vehicleOrChildren?.includes('Walk') ? selectedUser.details.vehicleOrChildren : 'Walking School Bus Chaperone • Zone Certified') : 'Not registered as a walker'}
-                          </p>
-                        </div>
-                      </div>
-                      <span style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: 6,
-                        background: isEnrolled ? '#ECFDF5' : '#F1F5F9',
-                        color: isEnrolled ? '#059669' : '#94A3B8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}>
-                        {isEnrolled ? <><CheckCircle2 size={10} /> Certified</> : 'Inactive'}
-                      </span>
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
-
-            {/* Contact & Bio Info */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#334155' }}>
-                <Phone size={14} style={{ color: '#94A3B8' }} />
-                <span>{selectedUser.phone}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#334155' }}>
-                <Mail size={14} style={{ color: '#94A3B8' }} />
-                <span>{selectedUser.email}</span>
-              </div>
-              {selectedUser.details && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#334155' }}>
-                  <Car size={14} style={{ color: '#94A3B8' }} />
-                  <span>{selectedUser.details.vehicleOrChildren}</span>
-                </div>
-              )}
-            </div>
-
-            {/* KPIs */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-              <div style={{ background: '#F8FAFC', padding: 12, borderRadius: 10, border: '1px solid #E2E8F0' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', margin: 0 }}>Total Trips</p>
-                <p style={{ fontSize: 20, fontWeight: 800, color: '#0F172A', margin: '4px 0 0' }}>{selectedUser.trips}</p>
-              </div>
-              <div style={{ background: '#F8FAFC', padding: 12, borderRadius: 10, border: '1px solid #E2E8F0' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', margin: 0 }}>Total Volume</p>
-                <p style={{ fontSize: 20, fontWeight: 800, color: '#1B2B68', margin: '4px 0 0' }}>{selectedUser.spent}</p>
-              </div>
-            </div>
-
-            {/* Modal Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <button
-                type="button"
-                onClick={e => handleToggleBan(selectedUser.id, e)}
-                style={{
-                  height: 38,
-                  padding: '0 16px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: selectedUser.status === 'Banned' ? '#10B981' : '#DC2626',
-                  color: '#FFFFFF',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                {selectedUser.status === 'Banned' ? 'Unban Account' : 'Ban Account'}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedUser(null)}
-                style={{
-                  height: 38,
-                  padding: '0 18px',
-                  borderRadius: 8,
-                  border: '1px solid #CBD5E1',
-                  background: '#FFFFFF',
-                  color: '#475569',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
   );
 }

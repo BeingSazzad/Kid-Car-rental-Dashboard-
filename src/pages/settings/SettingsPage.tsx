@@ -455,24 +455,7 @@ export default function SettingsPage() {
             </form>
           </div>
 
-          {/* Card 2: 2-Factor Authentication Safeguard Info */}
-          <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '20px 24px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
-                  Two-Factor Authentication (2FA)
-                </h3>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 12, background: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0' }}>
-                  Enforced
-                </span>
-              </div>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
-                Required for all Super Admin accounts via Google Authenticator or SMS token.
-              </p>
-            </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#1B2B68' }}>Active</span>
           </div>
-        </div>
       )}
 
       {/* ── TAB 3: Team Members (Structured Table with Columns & Strict Roles) ── */}
