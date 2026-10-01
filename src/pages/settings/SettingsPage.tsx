@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Bell, Shield, Plus, Trash2, X, Check, Mail, Send, CheckCircle2 } from 'lucide-react';
+import { User, Bell, Shield, Plus, Trash2, X, Check, Send, CheckCircle2, Lock, KeyRound, ShieldAlert } from 'lucide-react';
 
 export type AdminRole = 'Super Admin' | 'Admin';
 
@@ -43,16 +43,15 @@ const INITIAL_TEAM: TeamMember[] = [
   },
 ];
 
-const ROLES: AdminRole[] = ['Admin', 'Super Admin'];
-
 const TABS = [
   { key: 'profile', label: 'Admin Profile', icon: User },
+  { key: 'security', label: 'Security', icon: Lock },
   { key: 'team', label: 'Team', icon: Shield },
   { key: 'notif', label: 'Notifications', icon: Bell },
 ];
 
 export default function SettingsPage() {
-  const [tab, setTab] = useState('team');
+  const [tab, setTab] = useState('profile');
   const [team, setTeam] = useState<TeamMember[]>(INITIAL_TEAM);
 
   // Invite Modal State
@@ -65,8 +64,15 @@ export default function SettingsPage() {
 
   // Profile Form state
   const [fullName, setFullName] = useState('Super Admin');
-  const [email, setEmail] = useState('admin@home2school.ca');
+  const [email] = useState('admin@home2school.ca');
   const [profileSaved, setProfileSaved] = useState(false);
+
+  // Security Form state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   // Notifications toggle state
   const [notifs, setNotifs] = useState([
@@ -120,35 +126,69 @@ export default function SettingsPage() {
 
   const handleSaveProfile = () => {
     setProfileSaved(true);
-    setTimeout(() => setProfileSaved(false), 2500);
+    setTimeout(() => setProfileSaved(false), 2200);
+  };
+
+  const handleUpdatePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError('');
+    if (!currentPassword) {
+      setPasswordError('Please enter your current password.');
+      return;
+    }
+    if (!newPassword || newPassword.length < 8) {
+      setPasswordError('New password must be at least 8 characters long.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match.');
+      return;
+    }
+
+    setPasswordSaved(true);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setTimeout(() => setPasswordSaved(false), 2500);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, fontFamily: 'Manrope, sans-serif' }}>
-      {/* ── Page Header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1A1D24', margin: 0, letterSpacing: '-0.02em' }}>
-            Settings
-          </h1>
-          <p style={{ fontSize: 14, color: '#64748B', fontWeight: 500, margin: '2px 0 0' }}>
-            Manage admin team access, profile credentials, and platform preferences
-          </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, fontFamily: 'Manrope, sans-serif' }}>
+      {/* ── Toast Alert ── */}
+      {successToast && (
+        <div style={{
+          position: 'fixed',
+          top: 24,
+          right: 24,
+          background: '#059669',
+          color: '#fff',
+          padding: '12px 18px',
+          borderRadius: 10,
+          boxShadow: '0 8px 24px rgba(5, 150, 105, 0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          zIndex: 9999,
+          fontSize: 14,
+          fontWeight: 700,
+        }}>
+          <CheckCircle2 size={18} />
+          {successToast}
         </div>
+      )}
 
-        {successToast && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px',
-            borderRadius: 10, background: '#D1FAE5', border: '1px solid #A7F3D0',
-            color: '#065F46', fontSize: 14, fontWeight: 700,
-          }}>
-            <CheckCircle2 size={16} /> {successToast}
-          </div>
-        )}
+      {/* ── Header ── */}
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>
+          Settings
+        </h1>
+        <p style={{ fontSize: 14, fontWeight: 500, color: '#64748B', margin: '4px 0 0' }}>
+          Manage admin profile credentials, system security, team access, and notifications.
+        </p>
       </div>
 
-      {/* ── Tabs Navigation ── */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      {/* ── Tabs (Profile, Security, Team, Notifications) ── */}
+      <div style={{ display: 'flex', gap: 8, borderBottom: '1px solid #E2E8F0', paddingBottom: 12 }}>
         {TABS.map(t => {
           const active = tab === t.key;
           return (
@@ -161,13 +201,13 @@ export default function SettingsPage() {
                 gap: 7,
                 fontSize: 14,
                 fontWeight: active ? 700 : 600,
-                padding: '9px 18px',
-                borderRadius: 10,
+                padding: '8px 16px',
+                borderRadius: 8,
                 border: 'none',
                 cursor: 'pointer',
-                background: active ? '#1B2B68' : '#fff',
-                color: active ? '#fff' : '#64748B',
-                boxShadow: active ? '0 2px 6px rgba(27, 43, 104, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+                background: active ? '#1B2B68' : '#FFFFFF',
+                color: active ? '#FFFFFF' : '#64748B',
+                boxShadow: active ? '0 2px 4px rgba(27, 43, 104, 0.15)' : '0 1px 2px rgba(0,0,0,0.03)',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -180,7 +220,7 @@ export default function SettingsPage() {
                   padding: '1px 6px',
                   borderRadius: 99,
                   background: active ? 'rgba(255,255,255,0.2)' : '#EEF2F9',
-                  color: active ? '#fff' : '#1B2B68',
+                  color: active ? '#FFFFFF' : '#1B2B68',
                 }}>
                   {team.length}
                 </span>
@@ -190,127 +230,252 @@ export default function SettingsPage() {
         })}
       </div>
 
-      {/* ── TAB 1: Profile ── */}
+      {/* ── TAB 1: Admin Profile (NO PASSWORDS - STRICT PROFILE DETAILS) ── */}
       {tab === 'profile' && (
-        <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, padding: '28px', maxWidth: 520, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '24px 28px', maxWidth: 540, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          {/* User Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #F1F5F9' }}>
             <div
               style={{
-                width: 64,
-                height: 64,
+                width: 60,
+                height: 60,
                 borderRadius: '50%',
                 background: '#1B2B68',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 10px rgba(27, 43, 104, 0.2)',
+                boxShadow: '0 3px 8px rgba(27, 43, 104, 0.2)',
+                flexShrink: 0,
               }}
             >
-              <span style={{ fontSize: 22, fontWeight: 800, color: '#fff' }}>SA</span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>SA</span>
             </div>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: 0 }}>Super Admin</p>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 6px' }}>admin@home2school.ca</p>
-              <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: '#EEF1FB', color: '#1B2B68' }}>
-                Full System Authority
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <p style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: 0 }}>Super Admin</p>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 6, background: '#1B2B68', color: '#FFFFFF' }}>
+                  Super Admin
+                </span>
+              </div>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 4px' }}>admin@home2school.ca</p>
+              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: '#EEF2FF', color: '#1B2B68' }}>
+                Primary Root Authority
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Full Name */}
             <div>
               <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                Full Name
+                Full Name *
               </label>
               <input
                 value={fullName}
                 onChange={e => setFullName(e.target.value)}
                 style={{
-                  width: '100%', height: 42, borderRadius: 9,
-                  border: '1px solid #CBD5E1', padding: '0 14px', fontSize: 14,
-                  fontFamily: 'Manrope', fontWeight: 600, color: '#1A1D24',
-                  background: '#F8FAFC', outline: 'none', boxSizing: 'border-box',
+                  width: '100%', height: 40, borderRadius: 8,
+                  border: '1px solid #CBD5E1', padding: '0 12px', fontSize: 14,
+                  fontFamily: 'Manrope, sans-serif', fontWeight: 600, color: '#1A1D24',
+                  background: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
                 }}
               />
             </div>
 
+            {/* Email Address (LOCKED FOR SUPER ADMIN) */}
             <div>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                Email Address
-              </label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569' }}>
+                  Email Address *
+                </label>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#64748B', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Lock size={11} /> Primary Owner (Locked)
+                </span>
+              </div>
               <input
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                disabled
+                readOnly
                 style={{
-                  width: '100%', height: 42, borderRadius: 9,
-                  border: '1px solid #CBD5E1', padding: '0 14px', fontSize: 14,
-                  fontFamily: 'Manrope', fontWeight: 600, color: '#1A1D24',
+                  width: '100%', height: 40, borderRadius: 8,
+                  border: '1px solid #E2E8F0', padding: '0 12px', fontSize: 14,
+                  fontFamily: 'Manrope, sans-serif', fontWeight: 500, color: '#64748B',
                   background: '#F8FAFC', outline: 'none', boxSizing: 'border-box',
+                  cursor: 'not-allowed',
                 }}
               />
+              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                Primary Super Admin email address cannot be modified to protect system ownership.
+              </p>
             </div>
 
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                Current Password
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••••••"
+            {/* Save Profile Button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 8 }}>
+              <button
+                type="button"
+                onClick={handleSaveProfile}
                 style={{
-                  width: '100%', height: 42, borderRadius: 9,
-                  border: '1px solid #CBD5E1', padding: '0 14px', fontSize: 14,
-                  fontFamily: 'Manrope', color: '#1A1D24',
-                  background: '#F8FAFC', outline: 'none', boxSizing: 'border-box',
+                  height: 40,
+                  padding: '0 20px',
+                  borderRadius: 8,
+                  border: 'none',
+                  background: '#1B2B68',
+                  color: '#FFFFFF',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  boxShadow: '0 1px 3px rgba(27, 43, 104, 0.2)',
                 }}
-              />
+              >
+                {profileSaved ? <Check size={16} /> : null}
+                <span>{profileSaved ? 'Profile Updated!' : 'Save Profile Changes'}</span>
+              </button>
             </div>
-
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
-                New Password
-              </label>
-              <input
-                type="password"
-                placeholder="Leave blank to keep current"
-                style={{
-                  width: '100%', height: 42, borderRadius: 9,
-                  border: '1px solid #CBD5E1', padding: '0 14px', fontSize: 14,
-                  fontFamily: 'Manrope', color: '#1A1D24',
-                  background: '#F8FAFC', outline: 'none', boxSizing: 'border-box',
-                }}
-              />
-            </div>
-
-            <button
-              onClick={handleSaveProfile}
-              style={{
-                width: '100%',
-                height: 42,
-                borderRadius: 10,
-                border: 'none',
-                background: '#1B2B68',
-                color: '#fff',
-                fontSize: 14,
-                fontWeight: 700,
-                fontFamily: 'Manrope',
-                cursor: 'pointer',
-                marginTop: 10,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                boxShadow: '0 2px 4px rgba(27, 43, 104, 0.2)',
-              }}
-            >
-              {profileSaved ? <Check size={16} /> : null}
-              {profileSaved ? 'Profile Updated!' : 'Save'}
-            </button>
           </div>
         </div>
       )}
 
-      {/* ── TAB 2: Team Members (Structured Table with Columns & Strict Roles) ── */}
+      {/* ── TAB 2: Security & Password (DEDICATED SECURITY TAB) ── */}
+      {tab === 'security' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 520px)', gap: 20 }}>
+          {/* Card: Change Password */}
+          <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '24px 28px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <KeyRound size={18} color="#1B2B68" />
+              <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
+                Password &amp; Credentials
+              </h2>
+            </div>
+            <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 20px' }}>
+              Update your account password. Use a strong combination of letters, numbers, and symbols.
+            </p>
+
+            {passwordError && (
+              <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '10px 12px', color: '#DC2626', fontSize: 12, fontWeight: 600, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <ShieldAlert size={14} />
+                <span>{passwordError}</span>
+              </div>
+            )}
+
+            {passwordSaved && (
+              <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 8, padding: '10px 12px', color: '#059669', fontSize: 12, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Check size={14} />
+                <span>Password successfully changed!</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {/* Current Password */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  Current Password *
+                </label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                  style={{
+                    width: '100%', height: 40, borderRadius: 8,
+                    border: '1px solid #CBD5E1', padding: '0 12px', fontSize: 14,
+                    fontFamily: 'Manrope, sans-serif', color: '#1A1D24',
+                    background: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* New Password */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  New Password *
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="Minimum 8 characters (letters &amp; numbers)"
+                  style={{
+                    width: '100%', height: 40, borderRadius: 8,
+                    border: '1px solid #CBD5E1', padding: '0 12px', fontSize: 14,
+                    fontFamily: 'Manrope, sans-serif', color: '#1A1D24',
+                    background: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
+                  }}
+                />
+                <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
+                  Must contain at least 8 characters including uppercase letters and numbers.
+                </p>
+              </div>
+
+              {/* Confirm New Password */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#475569', display: 'block', marginBottom: 6 }}>
+                  Confirm New Password *
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter your new password"
+                  style={{
+                    width: '100%', height: 40, borderRadius: 8,
+                    border: '1px solid #CBD5E1', padding: '0 12px', fontSize: 14,
+                    fontFamily: 'Manrope, sans-serif', color: '#1A1D24',
+                    background: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 6 }}>
+                <button
+                  type="submit"
+                  style={{
+                    height: 40,
+                    padding: '0 20px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: '#1B2B68',
+                    color: '#FFFFFF',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    boxShadow: '0 1px 3px rgba(27, 43, 104, 0.2)',
+                  }}
+                >
+                  <Lock size={15} />
+                  <span>Update Password</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Card 2: 2-Factor Authentication Safeguard Info */}
+          <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 14, padding: '20px 24px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: '#1A1D24', margin: 0 }}>
+                  Two-Factor Authentication (2FA)
+                </h3>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 12, background: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0' }}>
+                  Enforced
+                </span>
+              </div>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
+                Required for all Super Admin accounts via Google Authenticator or SMS token.
+              </p>
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#1B2B68' }}>Active</span>
+          </div>
+        </div>
+      )}
+
+      {/* ── TAB 3: Team Members (Structured Table with Columns & Strict Roles) ── */}
       {tab === 'team' && (
         <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
           {/* Card Header */}
@@ -343,7 +508,7 @@ export default function SettingsPage() {
                 </span>
               </div>
               <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0' }}>
-                Colleagues with platform administration access (Super Admin & Admin roles only)
+                Colleagues with platform administration access (Super Admin &amp; Admin roles only)
               </p>
             </div>
 
@@ -517,7 +682,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* ── TAB 3: Notifications ── */}
+      {/* ── TAB 4: Notifications ── */}
       {tab === 'notif' && (
         <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, padding: '24px 28px', maxWidth: 520, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: '#1A1D24', margin: '0 0 4px' }}>
@@ -531,38 +696,45 @@ export default function SettingsPage() {
             {notifs.map((n, i) => (
               <div
                 key={n.id}
-                onClick={() => toggleNotif(n.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '14px 0',
-                  borderBottom: i < notifs.length - 1 ? '1px solid #F8FAFC' : 'none',
-                  cursor: 'pointer',
+                  borderBottom: i < notifs.length - 1 ? '1px solid #F1F5F9' : 'none',
                 }}
               >
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#1A1D24' }}>{n.label}</span>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#1A1D24', margin: 0 }}>
+                    {n.label}
+                  </p>
+                  <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>
+                    Send automated alert immediately when event occurs
+                  </p>
+                </div>
+
                 <div
+                  onClick={() => toggleNotif(n.id)}
                   style={{
                     width: 44,
                     height: 24,
                     borderRadius: 99,
                     background: n.on ? '#1B2B68' : '#CBD5E1',
+                    cursor: 'pointer',
                     position: 'relative',
                     transition: 'background 0.2s ease',
-                    flexShrink: 0,
                   }}
                 >
                   <div
                     style={{
-                      position: 'absolute',
-                      top: 3,
-                      left: n.on ? 23 : 3,
-                      width: 18,
-                      height: 18,
+                      width: 20,
+                      height: 20,
                       borderRadius: '50%',
                       background: '#fff',
-                      transition: 'left 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      position: 'absolute',
+                      top: 2,
+                      left: n.on ? 22 : 2,
+                      transition: 'left 0.2s ease',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                     }}
                   />
@@ -573,108 +745,80 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* ── INVITE ADMIN MODAL ── */}
+      {/* ── Invite Admin Modal ── */}
       {inviteModalOpen && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(15, 23, 42, 0.55)',
-            backdropFilter: 'blur(4px)',
+            background: 'rgba(15, 23, 42, 0.5)',
+            backdropFilter: 'blur(3px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 20,
-            zIndex: 100,
+            zIndex: 9999,
+            padding: 16,
           }}
           onClick={() => setInviteModalOpen(false)}
         >
           <div
             style={{
-              width: '100%',
-              maxWidth: 480,
               background: '#FFFFFF',
               borderRadius: 16,
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              border: '1px solid #E2E8F0',
-              fontFamily: 'Manrope, sans-serif',
+              width: 440,
+              maxWidth: '100%',
+              padding: 24,
+              boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+              position: 'relative',
             }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div
-              style={{
-                padding: '18px 24px',
-                borderBottom: '1px solid #E2E8F0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                background: '#F8FAFC',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 8,
-                    background: '#EEF2F9',
-                    color: '#1B2B68',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Plus size={18} />
-                </div>
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                  Invite Admin Team Member
-                </h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                  Invite New Admin
+                </h2>
+                <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>
+                  Send an email invite to join the Home2School admin team
+                </p>
               </div>
-
               <button
                 type="button"
                 onClick={() => setInviteModalOpen(false)}
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
-                  border: '1px solid #E2E8F0',
-                  background: '#FFFFFF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: '#64748B',
-                }}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 4 }}
               >
-                <X size={16} />
+                <X size={18} />
               </button>
             </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleSendInvite} style={{ padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {inviteError && (
-                <div style={{ padding: '8px 14px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, color: '#DC2626', fontSize: 12, fontWeight: 700 }}>
-                  {inviteError}
-                </div>
-              )}
+            {inviteError && (
+              <div style={{
+                background: '#FEF2F2',
+                border: '1px solid #FECACA',
+                borderRadius: 8,
+                padding: '10px 12px',
+                color: '#DC2626',
+                fontSize: 12,
+                fontWeight: 600,
+                marginBottom: 16,
+              }}>
+                {inviteError}
+              </div>
+            )}
+
+            <form onSubmit={handleSendInvite} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 6 }}>
                   Full Name *
                 </label>
                 <input
-                  required
-                  placeholder="e.g. David Miller"
                   value={inviteName}
                   onChange={e => setInviteName(e.target.value)}
+                  placeholder="e.g. Alex Morgan"
                   style={{
                     width: '100%',
                     height: 40,
-                    borderRadius: 9,
+                    borderRadius: 8,
                     border: '1px solid #CBD5E1',
                     padding: '0 12px',
                     fontSize: 14,
@@ -691,15 +835,14 @@ export default function SettingsPage() {
                   Email Address *
                 </label>
                 <input
-                  required
                   type="email"
-                  placeholder="e.g. david@home2school.ca"
                   value={inviteEmail}
                   onChange={e => setInviteEmail(e.target.value)}
+                  placeholder="alex@home2school.ca"
                   style={{
                     width: '100%',
                     height: 40,
-                    borderRadius: 9,
+                    borderRadius: 8,
                     border: '1px solid #CBD5E1',
                     padding: '0 12px',
                     fontSize: 14,
@@ -721,7 +864,7 @@ export default function SettingsPage() {
                   style={{
                     width: '100%',
                     height: 40,
-                    borderRadius: 9,
+                    borderRadius: 8,
                     border: '1px solid #CBD5E1',
                     padding: '0 12px',
                     fontSize: 14,
@@ -729,54 +872,26 @@ export default function SettingsPage() {
                     fontWeight: 600,
                     color: '#0F172A',
                     outline: 'none',
-                    background: '#fff',
-                    cursor: 'pointer',
+                    background: '#FFFFFF',
                     boxSizing: 'border-box',
                   }}
                 >
-                  {ROLES.map(r => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
+                  <option value="Admin">Admin</option>
+                  <option value="Super Admin">Super Admin</option>
                 </select>
               </div>
 
-              <div
-                style={{
-                  padding: '12px 14px',
-                  background: '#EEF2F9',
-                  borderRadius: 9,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                }}
-              >
-                <Mail size={16} style={{ color: '#1B2B68', flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: '#1B2B68', fontWeight: 600 }}>
-                  An email invitation with secure one-time login credentials will be dispatched.
-                </span>
-              </div>
-
-              {/* Modal Footer */}
-              <div
-                style={{
-                  paddingTop: 12,
-                  borderTop: '1px solid #F1F5F9',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: 10,
-                  marginTop: 6,
-                }}
-              >
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 }}>
                 <button
                   type="button"
                   onClick={() => setInviteModalOpen(false)}
                   style={{
-                    height: 38,
+                    height: 40,
                     padding: '0 16px',
                     borderRadius: 8,
-                    background: '#FFFFFF',
                     border: '1px solid #CBD5E1',
-                    color: '#475569',
+                    background: '#FFFFFF',
+                    color: '#64748B',
                     fontSize: 14,
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -787,22 +902,23 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   style={{
-                    height: 38,
+                    height: 40,
                     padding: '0 20px',
                     borderRadius: 8,
-                    background: '#1B2B68',
                     border: 'none',
+                    background: '#1B2B68',
                     color: '#FFFFFF',
                     fontSize: 14,
                     fontWeight: 700,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8,
-                    boxShadow: '0 2px 4px rgba(27, 43, 104, 0.2)',
+                    gap: 6,
                   }}
                 >
-                  <Send size={14} />Send</button>
+                  <Send size={15} />
+                  <span>Send Invite</span>
+                </button>
               </div>
             </form>
           </div>
