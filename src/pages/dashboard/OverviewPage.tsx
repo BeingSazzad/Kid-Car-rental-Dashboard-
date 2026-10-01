@@ -5,6 +5,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { Users, DollarSign, MapPin, ShieldAlert, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
+import { ChartSkeleton, StatCardSkeleton } from '@/components/ui/Skeleton';
 
 /* ─── Revenue Data by Year with 3 Streams: Parents, Drivers & WalkShare ─── */
 const REVENUE_BY_YEAR: Record<string, Array<{ month: string; parent: number; driver: number; walkshare: number }>> = {
@@ -341,6 +342,13 @@ export default function OverviewPage() {
   const navigate = useNavigate();
   const [revenueYear, setRevenueYear] = useState('2026');
   const [growthYear, setGrowthYear] = useState('2026');
+  const [isGrowthLoading, setIsGrowthLoading] = useState(false);
+
+  const handleGrowthYearChange = (year: string) => {
+    setIsGrowthLoading(true);
+    setGrowthYear(year);
+    setTimeout(() => setIsGrowthLoading(false), 320);
+  };
   const currentGrowthData = USER_GROWTH_BY_YEAR[growthYear] || USER_GROWTH_BY_YEAR['2026'];
   const totalUsers = userComposition.reduce((a, b) => a + b.value, 0);
 
@@ -420,7 +428,7 @@ export default function OverviewPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <select
                 value={growthYear}
-                onChange={e => setGrowthYear(e.target.value)}
+                onChange={e => handleGrowthYearChange(e.target.value)}
                 style={{
                   height: 30,
                   padding: '0 28px 0 10px',
@@ -442,18 +450,24 @@ export default function OverviewPage() {
             </div>
           }
         >
-          <ResponsiveContainer width="100%" height={230}>
-            <LineChart data={currentGrowthData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 10 }} />
-              <Line type="monotone" dataKey="parents" name="Parents" stroke="#1B2B68" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#1B2B68' }} />
-              <Line type="monotone" dataKey="drivers" name="Drivers" stroke="#059669" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#059669' }} />
-              <Line type="monotone" dataKey="walkers" name="Walkers" stroke="#D97706" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#D97706' }} />
-            </LineChart>
-          </ResponsiveContainer>
+          {isGrowthLoading ? (
+            <ChartSkeleton height={230} />
+          ) : (
+            <div className="fade-in">
+              <ResponsiveContainer width="100%" height={230}>
+                <LineChart data={currentGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fontFamily: 'Manrope', fill: '#94A3B8', fontWeight: 600 }} axisLine={false} tickLine={false} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: 600, paddingTop: 10 }} />
+                  <Line type="monotone" dataKey="parents" name="Parents" stroke="#1B2B68" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#1B2B68' }} />
+                  <Line type="monotone" dataKey="drivers" name="Drivers" stroke="#059669" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#059669' }} />
+                  <Line type="monotone" dataKey="walkers" name="Walkers" stroke="#D97706" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#D97706' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </SectionCard>
       </div>
 

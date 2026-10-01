@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 
 import { INITIAL_USERS, UserItem, UserRole } from '@/constants/mockUsers';
+import { TableRowSkeleton } from '@/components/ui/Skeleton';
 
 const roleStyles: Record<UserRole, { bg: string; color: string; border: string }> = {
   Parent: { bg: '#EEF2FF', color: '#1B2B68', border: '#C7D2FE' },
@@ -21,6 +22,7 @@ const statusColors: Record<string, { bg: string; color: string }> = {
 export default function UsersPage() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserItem[]>(INITIAL_USERS);
+  const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [roleTab, setRoleTab] = useState<'All' | 'Parents' | 'Drivers' | 'Walkers' | 'Multi-Role'>('All');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Pending' | 'Banned'>('All');
@@ -81,6 +83,14 @@ export default function UsersPage() {
     }
   };
 
+    const handleRefresh = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setUsers([...INITIAL_USERS]);
+      setIsLoading(false);
+    }, 450);
+  };
+
   const handleToggleBan = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setUsers(users.map(u => {
@@ -106,7 +116,7 @@ export default function UsersPage() {
         </div>
 
         <button
-          onClick={() => setUsers([...INITIAL_USERS])}
+          onClick={handleRefresh}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -122,7 +132,7 @@ export default function UsersPage() {
             cursor: 'pointer',
           }}
         >
-          <RefreshCw size={14} /> Refresh
+          <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} /> <span>{isLoading ? 'Syncing...' : 'Refresh'}</span>
         </button>
       </div>
 
@@ -308,7 +318,11 @@ export default function UsersPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, idx) => (
+                <TableRowSkeleton key={idx} />
+              ))
+            ) : filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#94A3B8', fontSize: 14 }}>
                   No users found matching query
@@ -318,6 +332,7 @@ export default function UsersPage() {
               filteredUsers.map(u => (
                 <tr
                   key={u.id}
+                  className="fade-in"
                   onClick={() => navigate(`/users/${u.id}`)}
                   style={{
                     borderBottom: '1px solid #F1F5F9',
