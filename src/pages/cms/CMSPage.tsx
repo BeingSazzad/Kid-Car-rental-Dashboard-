@@ -1325,42 +1325,11 @@ function AppBrandingManager() {
           {activeScreenTab === 'splash' && (
             <>
               <SimpleImageUpload
-                label="Splash Screen Image"
-                recommendedRatio="430 × 932 px"
+                label="Full Splash Screen Image"
+                recommendedRatio="430 × 932 px (19.5:9 Mobile Standard)"
                 currentImage={splashImage}
                 onImageChange={setSplashImage}
               />
-
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 6 }}>
-                  Splash Brand Wordmark
-                </label>
-                <input
-                  value={splashText}
-                  onChange={e => setSplashText(e.target.value)}
-                  placeholder="e.g. Home2School"
-                  style={{ width: '100%', height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontWeight: 600, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: 6 }}>
-                  Background Accent Color
-                </label>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <input
-                    type="color"
-                    value={splashBg}
-                    onChange={e => setSplashBg(e.target.value)}
-                    style={{ width: 44, height: 40, borderRadius: 8, border: '1px solid #CBD5E1', cursor: 'pointer', padding: 2 }}
-                  />
-                  <input
-                    value={splashBg}
-                    onChange={e => setSplashBg(e.target.value)}
-                    style={{ flex: 1, height: 40, padding: '0 12px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: 14, fontFamily: 'monospace', color: '#0F172A', outline: 'none' }}
-                  />
-                </div>
-              </div>
             </>
           )}
 
@@ -1401,13 +1370,17 @@ function AppBrandingManager() {
             <div style={{ width: 90, height: 14, background: '#0F172A', borderRadius: '0 0 10px 10px', margin: '0 auto', position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }} />
 
             {activeScreenTab === 'splash' ? (
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, color: '#FFFFFF', padding: 20, textAlign: 'center' }}>
-                <div style={{ width: 100, height: 100, borderRadius: 20, background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 10, border: '1px solid rgba(255,255,255,0.2)' }}>
-                  <img src={splashImage} alt="Splash Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                </div>
-                <h3 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
-                  {splashText}
-                </h3>
+              <div style={{ flex: 1, width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#1B2B68' }}>
+                <img
+                  src={splashImage}
+                  alt="Splash Screen Full Art"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
               </div>
             ) : activeScreenTab === 'logo' ? (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '36px 16px 20px', justifyContent: 'space-between', background: '#F8FAFC' }}>

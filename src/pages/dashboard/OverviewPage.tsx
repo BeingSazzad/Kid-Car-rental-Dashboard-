@@ -376,9 +376,9 @@ export default function OverviewPage() {
                 value={revenueYear}
                 onChange={e => setRevenueYear(e.target.value)}
                 style={{
-                  height: 30,
-                  padding: '0 28px 0 10px',
-                  borderRadius: 6,
+                  height: 32,
+                  padding: '0 34px 0 12px',
+                  borderRadius: 8,
                   border: '1px solid #CBD5E1',
                   background: '#FFFFFF',
                   fontSize: 12,
@@ -387,7 +387,10 @@ export default function OverviewPage() {
                   color: '#1B2B68',
                   outline: 'none',
                   cursor: 'pointer',
-                  appearance: 'auto',
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'none',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
                 }}
               >
                 <option value="2026">2026</option>
@@ -455,7 +458,7 @@ export default function OverviewPage() {
       </div>
 
       {/* Row 3: Latest Registrations (Left) + Users Composition (Right) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: 16 }}>
         {/* Latest Registrations */}
         <SectionCard title="Latest Registrations" action="View All" onAction={() => navigate('/users')}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
