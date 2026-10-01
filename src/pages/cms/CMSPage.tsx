@@ -153,7 +153,7 @@ function PolicyClauseManager({
 
   const openAddModal = () => {
     setClauseTitle('');
-    setClauseContent('<p>Write clause description here...</p><ul><li>First key requirement or standard</li><li>Second key requirement or standard</li></ul>');
+    setClauseContent('<p>Write section description here...</p><ul><li>First key requirement or standard</li><li>Second key requirement or standard</li></ul>');
     setActiveClauseId(null);
     setModalMode('create');
     setModalOpen(true);
@@ -178,7 +178,7 @@ function PolicyClauseManager({
         id: createId('clause'),
         number: '',
         title: clauseTitle.trim(),
-        content: clauseContent || '<p>Clause content details.</p>',
+        content: clauseContent || '<p>Section content details.</p>',
       };
       const updated = renumber([...data.clauses, newClause]);
       const updatedData = { ...data, clauses: updated };
@@ -274,7 +274,7 @@ function PolicyClauseManager({
               boxShadow: '0 2px 4px rgba(27, 43, 104, 0.2)',
             }}
           >
-            <Plus size={14} /> Add Clause
+            <Plus size={14} /> Add Section
           </button>
         </div>
       </div>
@@ -423,7 +423,7 @@ function PolicyClauseManager({
                 (e.currentTarget as HTMLElement).style.borderColor = '#CBD5E1';
               }}
             >
-              <Plus size={16} /> Add Clause
+              <Plus size={16} /> Add Section
             </button>
           </div>
       </div>

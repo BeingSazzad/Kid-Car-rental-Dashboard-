@@ -95,15 +95,10 @@ export default function PackagesPage() {
     setModalMode('create');
     setSelectedPlanId(null);
     setName('');
-    setPriceAmount('19.99');
+    setPriceAmount('');
     setPeriod('/ month');
     setBadge('');
-    setFeatures([
-      'Up to 3 Children profiles included',
-      '$0 Platform booking fees',
-      'Guaranteed dedicated recurring driver',
-      'Live GPS route tracking & safe arrival SMS',
-    ]);
+    setFeatures([]);
     setNewFeature('');
     setModalOpen(true);
     setOpenMenuId(null);
